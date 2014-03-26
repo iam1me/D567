@@ -1,0 +1,10 @@
+package d567.trace;
+
+public enum TraceLevel 
+{
+	DEBUG,
+	VERBOSE,
+	INFORMATION,
+	WARNING,
+	ERROR	
+}

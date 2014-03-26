@@ -1,0 +1,31 @@
+package d567.trace;
+
+public class Session 
+{
+	private String _id;
+	private String _desc = String.Empty;
+	private TraceLevel _level = TraceLevel.DEBUG;
+	private long _start = 0;
+	private long _end = 0;
+	
+	public Session(String id)
+	{
+		_id = id;
+	}
+	
+	public Session(String id, String desc)
+	{
+		_id = id;
+		_desc = desc;
+	}
+	
+	public Session(String id, String desc, TraceLevel level)
+	{
+		_id = id;
+		_desc = desc;
+		_level = level;
+	}
+	
+	public 
+	
+}

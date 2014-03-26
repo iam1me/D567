@@ -1,0 +1,72 @@
+package d567.trace;
+
+import android.content.*;
+import android.database.sqlite.*;
+import android.util.Log;
+
+import java.text.*;
+
+public class SessionHelper extends android.database.sqlite.SQLiteOpenHelper
+{
+	protected static String LOG_TAG = "SESSION_HELPER";	
+		
+	public static final String TABLE_NAME = "session_mstr";
+	public static final int DB_VER = 1;
+	
+	public static final String KEY_ID = "session_id";
+	public static final String KEY_DESC = "session_desc";
+	public static final String KEY_START = "session_start_time";
+	public static final String KEY_END = "session_end_time";
+	public static final String KEY_LEVEL = "session_trace_level";
+	
+	private String _dbName = "D567";
+	public String getDBName()
+	{
+		return _dbName;
+	}
+
+	/**
+	 * This constructor assumes that the database name is "D567"
+	 * @param app	The Context used for accessing the database
+	 */
+	public SessionHelper(Context app)
+	{
+		super(app, _dbName, null, DB_VER);		
+	}
+	
+	/**
+	 * This constructor allows the database containing the trace information to be specified
+	 * @param app	The Context used for accessing the database
+	 * @param D567_DBName	The name of database that contains the tracing information
+	 */
+	public SessionHelper(Context app, String D567_DBName)
+	{
+		super(app, D567_DBName, null, DB_VER);		
+	}
+
+	@Override
+	public void onCreate(SQLiteDatabase db) 
+	{
+		try
+		{
+			String tableSQL = MessageFormat.format(
+				"create table {0} ({1} text primary key not null, {2} text, {3} integer not null, {4} integer,"+
+			    "{5} integer not null)",
+				this.getDBName(), KEY_ID, KEY_DESC, KEY_START, KEY_END, KEY_LEVEL);
+		
+			db.execSQL(tableSQL);
+		}
+		catch(Exception ex)
+		{
+			Log.e(LOG_TAG, ex.getMessage());
+		}
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) 
+	{
+		Log.e(LOG_TAG, MessageFormat.format(
+				"Unexpected attempt to upgrade DB from version {0,number,integer} to {1,number,integer}",
+				new Object[] {oldVersion, newVersion}));
+	}
+}

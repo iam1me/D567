@@ -1,0 +1,108 @@
+package d567.trace;
+
+import android.content.*;
+import android.database.*;
+import android.database.sqlite.*;
+import android.text.format.Time;
+
+public class TraceAdapter 
+{
+	protected TraceHelper _dbHelper;
+	protected SQLiteDatabase _db;
+	
+	public TraceAdapter(Context app)
+	{
+		_dbHelper = new TraceHelper(app);
+		_db = null;
+	}
+	
+	public TraceAdapter(Context app, String DBName)
+	{
+		_dbHelper = new TraceHelper(app, DBName);		
+		_db = null;
+	}
+	
+	protected void finalize() throws Throwable
+	{
+		if(_db != null)
+			_db.close();
+		
+		super.finalize();		
+	}
+	
+	public void open() throws IllegalStateException,SQLiteException
+	{
+		if(_db != null)
+			throw new IllegalStateException("database already open");
+		
+		_db = _dbHelper.getWritableDatabase();
+	}
+	
+	public void close() throws IllegalStateException,SQLiteException
+	{
+		if(_db == null)
+			throw new IllegalStateException("database not open");
+		
+		_db.close();
+	}
+	
+	public void insertTrace(String session_id, String trace_id, String module, 
+			TraceLevel level, String message, long time) throws IllegalStateException,SQLiteException
+	{
+		if(_db == null)
+			throw new IllegalStateException("database not open");
+		
+		ContentValues values = new ContentValues();
+		values.put(TraceHelper.KEY_SESSION_ID, session_id);
+		values.put(TraceHelper.KEY_ID, trace_id);
+		values.put(TraceHelper.KEY_MODULE, module);
+		values.put(TraceHelper.KEY_LEVEL, level.toString());
+		values.put(TraceHelper.KEY_MESSAGE,  message);
+		values.put(TraceHelper.KEY_TIME, time);
+		
+		_db.insertOrThrow(TraceHelper.TABLE_NAME, null, values);
+	}
+	
+	public void insertTrace(String session_id, String module, 
+			TraceLevel level, String message) throws IllegalStateException, SQLiteException
+	{
+		if(_db == null)
+			throw new IllegalStateException("database not open");
+		
+		ContentValues values = new ContentValues();
+		values.put(TraceHelper.KEY_SESSION_ID, session_id);
+		values.put(TraceHelper.KEY_ID, java.util.UUID.randomUUID().toString());
+		values.put(TraceHelper.KEY_MODULE, module);
+		values.put(TraceHelper.KEY_LEVEL, level.toString());
+		values.put(TraceHelper.KEY_MESSAGE,  message);
+		
+		Time now = new Time(Time.getCurrentTimezone());
+		now.setToNow();
+		values.put(TraceHelper.KEY_TIME, now.toMillis(false));
+		
+		_db.insertOrThrow(TraceHelper.TABLE_NAME, null, values);
+	}
+	
+	public long deleteSessionTrace(String session_id) throws IllegalStateException,SQLiteException
+	{
+		if(_db == null)
+			throw new IllegalStateException("database not open");
+		
+		long rows = _db.delete(TraceHelper.TABLE_NAME, "? = '?'",
+				new String[] {TraceHelper.KEY_SESSION_ID, session_id});
+		
+		return rows;
+	}
+	
+	public long getSessionTraceCount(String session_id) throws IllegalStateException, SQLiteException
+	{
+		if(_db == null)
+			throw new IllegalStateException("database not open");
+		
+		Cursor c =_db.rawQuery("SELECT count(*) FROM ? WHERE ? = '?'", 
+					new String[] {TraceHelper.TABLE_NAME, TraceHelper.KEY_ID, session_id}); 
+		
+		return c.getLong(0);
+	}
+
+}

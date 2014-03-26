@@ -1,0 +1,82 @@
+package d567.trace;
+
+public class Session 
+{
+	private String _id;
+	private String _desc = "";
+	private TraceLevel _level = TraceLevel.DEBUG;
+	private Long _start = null;
+	private Long _end = null;
+	
+	public Session(String id)
+	{
+		_id = id;
+	}
+	
+	public Session(String id, String desc)
+	{
+		_id = id;
+		_desc = desc;
+	}
+	
+	public Session(String id, String desc, TraceLevel level)
+	{
+		_id = id;
+		_desc = desc;
+		_level = level;
+	}
+	
+	public Session(String id, String desc, TraceLevel level, Long start, Long end)
+	{
+		_id = id;
+		_desc = desc;
+		_level = level;
+		_start = start;
+		_end = end;
+	}
+	
+	public String getId()
+	{
+		return _id;
+	}
+	
+	public String getDesc()
+	{
+		return _desc;
+	}
+	
+	public TraceLevel getTraceLevel()
+	{
+		return _level;
+	}
+	
+	public Long getStartTime()
+	{
+		return _start;
+	}
+	
+	public Long getEndTime()
+	{
+		return _end;
+	}
+	
+	public void setDesc(String desc)
+	{
+		_desc = desc;
+	}
+	
+	public void setTraceLevel(TraceLevel level)
+	{
+		_level = level;
+	}
+	
+	public void setStartTime(Long start)
+	{
+		_start = start;
+	}
+	
+	public void setEndTime(Long end)
+	{
+		_end = end;
+	}	
+}

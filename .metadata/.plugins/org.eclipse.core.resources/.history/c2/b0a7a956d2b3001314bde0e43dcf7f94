@@ -1,0 +1,37 @@
+package d567.trace;
+
+import android.content.*;
+import android.database.sqlite.*;
+
+public class SessionAdapter 
+{
+	private SessionHelper _dbHelper = null;
+	private SQLiteDatabase _db = null;
+	
+	public SessionAdapter(Context app)
+	{
+		_dbHelper = new SessionHelper(app);
+	}
+	
+	public void open() throws Exception, SQLiteException
+	{
+		if(_db != null)
+			throw new Exception("A Database connection has already been opened");
+		
+		_db = _dbHelper.getWritableDatabase();
+	}
+	
+	public void close() throws Exception, SQLiteException
+	{
+		if(_db == null)
+			throw new Exception("A Database connection has not been opened yet");
+		
+		_db.close();
+		_db = null;		
+	}
+	
+	
+	
+	
+
+}

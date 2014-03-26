@@ -1,0 +1,34 @@
+package d567.trace;
+
+public class TraceInfo 
+{
+	private String _sessionId;
+	private String _id;
+	private String _module;
+	private TraceLevel _level;
+	private Long _time;
+	private String _msg;
+	
+	public TraceInfo(String SessionId, String TraceId)
+	{
+		_sessionId = SessionId;
+		_id = TraceId;
+	}
+	
+	public TraceInfo(String SessionId, String TraceId, String Message)
+	{
+		
+	}
+	
+	public TraceInfo(String SessionId, String TraceId, String Message, String Module, TraceLevel Level, Long Time)
+	{
+		_sessionId = SessionId;
+		_id = TraceId;
+		_module = Module;
+		_level = Level;
+		_time = Time;
+		_msg = Message;
+	}
+	
+
+}

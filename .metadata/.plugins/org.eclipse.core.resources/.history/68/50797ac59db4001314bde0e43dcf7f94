@@ -1,0 +1,9 @@
+package d567.trace;
+
+public class RecordNotFoundException extends Exception
+{
+	public RecordNotFoundException()
+	{
+		super("Record Not Found");
+	}
+}

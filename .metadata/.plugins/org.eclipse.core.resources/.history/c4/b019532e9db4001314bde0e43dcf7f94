@@ -1,0 +1,8 @@
+package d567.trace;
+
+import android.database.sqlite.SQLiteException;
+
+public class RecordNotFoundException extends SQLiteException
+{
+
+}

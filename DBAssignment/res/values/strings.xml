@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DBAssignment</string>
+    <string name="action_settings">Settings</string>
+    <string name="strClear">Delete All</string>
+    <string name="strAdd">Write Entry</string>
+    <string name="strRead">Read Log</string>
+
+</resources>

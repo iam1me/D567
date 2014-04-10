@@ -2,6 +2,8 @@ package d567.trace;
 
 import java.text.MessageFormat;
 
+import d567.db.DBHelper;
+
 import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.*;
@@ -11,12 +13,12 @@ import android.util.Log;
 public class SessionAdapter 
 {
 	protected static String LOG_TAG = "D567_SESSION_ADAPTER";
-	private SessionHelper _dbHelper = null;
+	private DBHelper _dbHelper = null;
 	private SQLiteDatabase _db = null;
 	
 	public SessionAdapter(Context app)
 	{
-		_dbHelper = new SessionHelper(app);
+		_dbHelper = new DBHelper(app);
 	}
 	
 	protected void finalize() throws Throwable
@@ -60,18 +62,18 @@ public class SessionAdapter
 		}
 		
 		ContentValues values = new ContentValues();
-		values.put(SessionHelper.KEY_ID, session_id);
-		values.put(SessionHelper.KEY_DESC,  desc);
-		values.put(SessionHelper.KEY_LEVEL, session_level.toString());
-		values.putNull(SessionHelper.KEY_END);
+		values.put(SessionTable.KEY_ID, session_id);
+		values.put(SessionTable.KEY_DESC,  desc);
+		values.put(SessionTable.KEY_LEVEL, session_level.toString());
+		values.putNull(SessionTable.KEY_END);
 		
 		if(bStart)
-			values.put(SessionHelper.KEY_START, (bStart)? start_time : null);
+			values.put(SessionTable.KEY_START, (bStart)? start_time : null);
 		else 
-			values.putNull(SessionHelper.KEY_START);		
+			values.putNull(SessionTable.KEY_START);		
 				
 		
-		_db.insertOrThrow(SessionHelper.TABLE_NAME, null, values);		
+		_db.insertOrThrow(SessionTable.TABLE_NAME, null, values);		
 		
 		SessionInfo info = new SessionInfo(session_id, desc, session_level, (bStart)? start_time : null, null);
 		return info;
@@ -82,9 +84,9 @@ public class SessionAdapter
 		if(_db == null)
 			throw new IllegalStateException("database not open");
 		
-		Cursor c = _db.query(SessionHelper.TABLE_NAME, 
-				new String[] {SessionHelper.KEY_DESC, SessionHelper.KEY_LEVEL, SessionHelper.KEY_START, SessionHelper.KEY_END},
-				"? = '?'", new String[] {SessionHelper.KEY_ID, session_id}, null, null, null);
+		Cursor c = _db.query(SessionTable.TABLE_NAME, 
+				new String[] {SessionTable.KEY_DESC, SessionTable.KEY_LEVEL, SessionTable.KEY_START, SessionTable.KEY_END},
+				"? = '?'", new String[] {SessionTable.KEY_ID, session_id}, null, null, null);
 		
 		if(!c.moveToFirst())
 			return null;
@@ -112,10 +114,10 @@ public class SessionAdapter
 		t.setToNow();
 		
 		ContentValues values = new ContentValues();
-		values.put(SessionHelper.KEY_START, t.toMillis(false));
+		values.put(SessionTable.KEY_START, t.toMillis(false));
 		
-		int count = _db.update(SessionHelper.TABLE_NAME, values, "? = '?' and ? is null", 
-				new String[] {SessionHelper.KEY_ID,session_id, SessionHelper.KEY_START});
+		int count = _db.update(SessionTable.TABLE_NAME, values, "? = '?' and ? is null", 
+				new String[] {SessionTable.KEY_ID,session_id, SessionTable.KEY_START});
 		
 		if(count == 0)
 		{
@@ -132,10 +134,10 @@ public class SessionAdapter
 		t.setToNow();
 		
 		ContentValues values = new ContentValues();
-		values.put(SessionHelper.KEY_END, t.toMillis(false));
+		values.put(SessionTable.KEY_END, t.toMillis(false));
 		
-		int count = _db.update(SessionHelper.TABLE_NAME, values, "? = '?'", 
-				new String[] {SessionHelper.KEY_ID,session_id});
+		int count = _db.update(SessionTable.TABLE_NAME, values, "? = '?'", 
+				new String[] {SessionTable.KEY_ID,session_id});
 		
 		if(count == 0)
 		{
@@ -150,13 +152,13 @@ public class SessionAdapter
 		
 		_db.beginTransaction();
 		
-		long rows = _db.delete(TraceHelper.TABLE_NAME, "? = '?'",
-				new String[] {TraceHelper.KEY_SESSION_ID, session_id});
+		long rows = _db.delete(TraceTable.TABLE_NAME, "? = '?'",
+				new String[] {TraceTable.KEY_SESSION_ID, session_id});
 		
-		Log.v(LOG_TAG, MessageFormat.format("Deleted {0 number integer} rows from {1}" , rows, TraceHelper.TABLE_NAME));
+		Log.v(LOG_TAG, MessageFormat.format("Deleted {0 number integer} rows from {1}" , rows, TraceTable.TABLE_NAME));
 		
-		rows = _db.delete(SessionHelper.TABLE_NAME, "? = '?'", 
-				new String[] {SessionHelper.TABLE_NAME, session_id});
+		rows = _db.delete(SessionTable.TABLE_NAME, "? = '?'", 
+				new String[] {SessionTable.TABLE_NAME, session_id});
 		
 		if(rows == 0)
 		{

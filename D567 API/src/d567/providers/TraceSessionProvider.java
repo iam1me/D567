@@ -2,6 +2,7 @@ package d567.providers;
 
 import java.text.MessageFormat;
 
+import d567.db.DBHelper;
 import d567.trace.*;
 import android.content.*;
 import android.database.Cursor;
@@ -37,11 +38,8 @@ public class TraceSessionProvider extends ContentProvider
 		_matcher.addURI(PROVIDER_NAME, "sessions/*/trace/*", CONTENT_TRACE_ID);
 	}
 		
-	private SessionHelper _sessionHelper = null;	
-	private SQLiteDatabase _sessionDB = null;
-	
-	private TraceHelper _traceHelper = null;	
-	private SQLiteDatabase _traceDB = null;	
+	private DBHelper _dbHelper = null;
+	private SQLiteDatabase _db = null;
 	
 	@Override
 	public int delete(Uri arg0, String arg1, String[] arg2) 
@@ -83,21 +81,29 @@ public class TraceSessionProvider extends ContentProvider
 		try
 		{
 			Context c = getContext();
-			_traceHelper = new TraceHelper(c);
-			_sessionHelper = new SessionHelper(c);			
-			_traceDB = _traceHelper.getReadableDatabase();
-			_sessionDB = _sessionHelper.getReadableDatabase();
+			_dbHelper = new DBHelper(c);	
+			_db = _dbHelper.getReadableDatabase();
 		}
 		catch(Exception ex)
 		{
-			_traceDB = null;
-			_sessionDB = null;
+			_db = null;
+			_dbHelper = null;
 			
 			Log.e(LOG_TAG, MessageFormat.format("failed to open databases. {0}", ex.getMessage()));
 			return false;
 		}	
 		
 		return true;
+	}
+	
+	@Override
+	protected void finalize() throws Throwable
+	{
+		_db.close();
+		_db = null;
+		_dbHelper = null;
+		
+		super.finalize();
 	}
 
 	@Override
@@ -125,9 +131,9 @@ public class TraceSessionProvider extends ContentProvider
 	protected Cursor queryForSessions(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
 	{
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-		qb.setTables(SessionHelper.TABLE_NAME);
+		qb.setTables(SessionTable.TABLE_NAME);
 		
-		return qb.query(_sessionDB, projection, selection, selectionArgs, null, null, sortOrder);		
+		return qb.query(_db, projection, selection, selectionArgs, null, null, sortOrder);		
 	}
 	
 	protected Cursor queryForSessionById(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
@@ -135,10 +141,10 @@ public class TraceSessionProvider extends ContentProvider
 		String session_id = uri.getPathSegments().get(1);
 		
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-		qb.setTables(SessionHelper.TABLE_NAME);
-		qb.appendWhere(MessageFormat.format("? = '?'", SessionHelper.KEY_ID, session_id));
+		qb.setTables(SessionTable.TABLE_NAME);
+		qb.appendWhere(MessageFormat.format("? = '?'", SessionTable.KEY_ID, session_id));
 		
-		return qb.query(_sessionDB, projection, selection, selectionArgs, null, null, sortOrder);
+		return qb.query(_db, projection, selection, selectionArgs, null, null, sortOrder);
 	}
 	
 	protected Cursor queryForTrace(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
@@ -146,10 +152,10 @@ public class TraceSessionProvider extends ContentProvider
 		String session_id = uri.getPathSegments().get(1);
 		
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-		qb.setTables(TraceHelper.TABLE_NAME);
-		qb.appendWhere(MessageFormat.format("? = '?'", TraceHelper.KEY_SESSION_ID, session_id));
+		qb.setTables(TraceTable.TABLE_NAME);
+		qb.appendWhere(MessageFormat.format("? = '?'", TraceTable.KEY_SESSION_ID, session_id));
 		
-		return qb.query(_traceDB, projection, selection, selectionArgs, null, null, sortOrder);		
+		return qb.query(_db, projection, selection, selectionArgs, null, null, sortOrder);		
 	}
 	
 	protected Cursor queryForTraceById(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
@@ -158,11 +164,11 @@ public class TraceSessionProvider extends ContentProvider
 		String trace_id = uri.getPathSegments().get(3);
 		
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-		qb.setTables(TraceHelper.TABLE_NAME);
-		qb.appendWhere(MessageFormat.format("? = '?'", TraceHelper.KEY_SESSION_ID, session_id));
-		qb.appendWhere(MessageFormat.format("? = '?'", TraceHelper.KEY_ID, trace_id));
+		qb.setTables(TraceTable.TABLE_NAME);
+		qb.appendWhere(MessageFormat.format("? = '?'", TraceTable.KEY_SESSION_ID, session_id));
+		qb.appendWhere(MessageFormat.format("? = '?'", TraceTable.KEY_ID, trace_id));
 		
-		return qb.query(_traceDB, projection, selection, selectionArgs, null, null, sortOrder);		
+		return qb.query(_db, projection, selection, selectionArgs, null, null, sortOrder);		
 	}
 
 	@Override

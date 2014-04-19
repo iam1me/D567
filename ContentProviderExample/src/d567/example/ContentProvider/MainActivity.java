@@ -1,8 +1,7 @@
 package d567.example.ContentProvider;
 
-import d567.provider.SessionContract;
-import d567.provider.TraceContract;
-import d567.trace.TraceTable;
+import com.d567.provider.*;
+import com.d567.tracesession.*;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
@@ -10,8 +9,8 @@ import android.database.Cursor;
 import android.util.Log;
 import android.view.Menu;
 
-public class MainActivity extends Activity {
-	
+public class MainActivity extends Activity 
+{	
 	protected static String LOG_TAG = "D567_EXAMPLE_CONTENT_PROVIDER";
 
 	@Override
@@ -37,8 +36,8 @@ public class MainActivity extends Activity {
 		Cursor c;		
 		try
 		{		
-			String[] columns = new String[] {d567.trace.SessionTable.KEY_ID};
-			c = getContentResolver().query(SessionContract.URI_SESSION,columns, null, null, null);
+			String[] columns = new String[] {SessionTable.KEY_ID};
+			c = getContentResolver().query(SessionContract.GetUri(),columns, null, null, null);
 		}
 		catch(Exception ex)
 		{
@@ -89,7 +88,7 @@ public class MainActivity extends Activity {
 				String columns[] = new String[] {TraceTable.KEY_MESSAGE};
 				String sortBy = TraceTable.KEY_TIME + " DESC";
 				
-				Uri traceUri = TraceContract.URI_TRACE
+				Uri traceUri = TraceContract.GetUri()
 								.buildUpon()
 								.appendQueryParameter(TraceContract.PARAM_SESSION_ID, cur)
 								.build();								

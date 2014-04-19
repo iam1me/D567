@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="d567.api"
+    package="com.d567"
     android:versionCode="1"
     android:versionName="1.0" >
 

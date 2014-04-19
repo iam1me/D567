@@ -24,8 +24,8 @@
         </activity>
         
         <provider 
-            android:authorities="d567.provider" 
-            android:name="d567.provider.TraceSessionProvider"
+            android:authorities="com.traceexample.d567.provider" 
+            android:name="com.d567.provider.TraceSessionProvider"
             android:exported="true"
             />
         

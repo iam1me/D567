@@ -1,22 +1,19 @@
 package d567.example.tracing;
 
-import d567.db.*;
-import d567.trace.*;
+import com.d567.app.*;
+import com.d567.tracesession.*;
 import java.text.MessageFormat;
 import java.util.List;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
 public class MainActivity extends Activity implements View.OnClickListener 
 {
-	protected static String LOG_TAG = "FILE_ASSIGNMENT";
-	private String _sessionId = null;
+	protected static String LOG_TAG = "D567_TRACE_EXAMPLE";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -34,46 +31,14 @@ public class MainActivity extends Activity implements View.OnClickListener
 		
 		try
 		{
-			GetSessionId();
-			Toast.makeText(this,  "Session ID: " + _sessionId, Toast.LENGTH_LONG).show();
+			Application.Init(this, new MySettings());
+			Toast.makeText(this,  "Session ID: " + Application.getSessionId(), Toast.LENGTH_LONG).show();
 		}
 		catch(Exception ex)
 		{
 			Log.e(LOG_TAG, ex.getMessage());
-			Toast.makeText(this, "Failed to get session id. " + ex.getMessage(), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "Failed to Init D567 Application. " + ex.getMessage(), Toast.LENGTH_LONG).show();
 		}
-	}
-	
-	public void GetSessionId() throws Exception
-	{
-		Log.v(LOG_TAG, "GetSessionId");
-		DBHelper dbHelper = new DBHelper(this);
-		SQLiteDatabase db = dbHelper.getReadableDatabase();
-		
-		Log.v(LOG_TAG, "DB Name: " + dbHelper.getDBName());
-		
-		Log.v(LOG_TAG, "GetSessionId - Running Query");		
-		Cursor c = db.query(SessionTable.TABLE_NAME, new String[] {SessionTable.KEY_ID},
-				null, null, null, null, SessionTable.KEY_START);
-		
-		if(c.moveToFirst())
-		{
-			_sessionId = c.getString(0);
-			Log.v(LOG_TAG, "GetSessionId - Found SessionId: " + _sessionId);			
-		}
-		else
-		{
-			Log.v(LOG_TAG, "GetSessionId - Creating New Session");
-			SessionAdapter adapter = new SessionAdapter(this);
-			adapter.open();
-			
-			SessionInfo info = adapter.CreateSession("default", true, TraceLevel.DEBUG);
-			_sessionId = info.getId();
-			
-			adapter.close();
-		}
-		
-		db.close();
 	}
 
 	@Override
@@ -115,7 +80,7 @@ public class MainActivity extends Activity implements View.OnClickListener
 		{
 			TraceAdapter adapter = new TraceAdapter(this);
 			adapter.open();
-			List<TraceInfo> entries = adapter.getSessionTrace(_sessionId);
+			List<TraceInfo> entries = adapter.getSessionTrace(Application.getSessionId());
 			adapter.close();
 			
 			Log.v(LOG_TAG, "Constructing Log from Trace Entries");
@@ -142,12 +107,8 @@ public class MainActivity extends Activity implements View.OnClickListener
 	{						
 		try
 		{		
-			TraceAdapter adapter = new TraceAdapter(this);
-			adapter.open();
-			TraceInfo info = adapter.insertTrace(_sessionId, LOG_TAG, TraceLevel.VERBOSE, line);
-			adapter.close();
-			
-			Log.v(LOG_TAG, "Wrote New Trace Record. ID: " + info.getId());
+			Trace.Verbose(LOG_TAG, line);
+			Log.v(LOG_TAG, "Wrote New Trace Record");
 		}
 		catch(Exception ex)
 		{
@@ -162,7 +123,7 @@ public class MainActivity extends Activity implements View.OnClickListener
 		{
 			TraceAdapter adapter = new TraceAdapter(this);
 			adapter.open();
-			long count = adapter.deleteSessionTrace(_sessionId);
+			long count = adapter.deleteSessionTrace(Application.getSessionId());
 			adapter.close();
 			
 			Toast.makeText(this, MessageFormat.format("Deleted {0, number, integer} Log Entries",

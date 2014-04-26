@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">D567App</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="main_menu_title">Main Menu</string>
+    <string name="main_list">Tracable Apps</string>
+    
+    <string name="app_menu_title">App Menu</string>
+    <string name="app_list">App Options</string>
+
+</resources>

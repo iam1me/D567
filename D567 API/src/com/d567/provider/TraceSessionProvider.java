@@ -21,8 +21,6 @@ public class TraceSessionProvider extends ContentProvider
 	private static UriMatcher _matcher = null;
 	private static boolean _bInitialized = false;
 	
-	private static TraceSessionProvider _singleton = null;
-	
 	public static final void Init(ApplicationSettings appSettings)
 	{
 		if(_bInitialized)
@@ -114,8 +112,6 @@ public class TraceSessionProvider extends ContentProvider
 	{
 		if(_db != null && _db.isOpen())
 			_db.close();
-		
-		_singleton = null;
 		
 		super.finalize();
 	}

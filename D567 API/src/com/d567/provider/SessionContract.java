@@ -1,10 +1,6 @@
 package com.d567.provider;
 
 import java.text.MessageFormat;
-
-import com.d567.app.Application;
-
-
 import android.net.Uri;
 
 public class SessionContract 
@@ -16,9 +12,11 @@ public class SessionContract
 	
 	public static final String PARAM_SESSION_ID = "SessionId";
 	
-	public static Uri GetUri()
+	public static Uri GetUri(String authority)
 	{
-		String authority = Application.getSettings().getAuthority();
+		if(authority == null || authority.isEmpty())
+			throw new IllegalArgumentException("Authority is Null/Empty");
+		
 		String strUri = MessageFormat.format("content://{0}/session", authority);
 		return Uri.parse(strUri);
 	}

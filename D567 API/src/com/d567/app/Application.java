@@ -2,12 +2,13 @@ package com.d567.app;
 
 import java.util.List;
 
-import com.d567.provider.TraceSessionProvider;
-import com.d567.tracesession.SessionAdapter;
-import com.d567.tracesession.SessionInfo;
-import com.d567.tracesession.TraceLevel;
+import com.d567.app.intent.action.*;
+import com.d567.app.intent.reciever.*;
+import com.d567.provider.*;
+import com.d567.tracesession.*;
 
 import android.content.Context;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
@@ -24,6 +25,9 @@ public class Application
 	private static String _sessionId = null;	
 	private static TraceLevel _level = TraceLevel.UNKNOWN;	
 	private static List<String> _activeModules = null;
+	
+	private static SettingsRequestHandler _settingsHandler = null;
+	
 	
 	/**********************************
 	 *         Getters/Setters
@@ -145,17 +149,17 @@ public class Application
 	}	
 	
 	/**********************************
-	 *    Application Initialization
+	 *  Application Lifecycle Events
 	 ***********************************/	
 	/**
 	 * This function should be called in the OnCreate function
-	 * of the application. 
+	 * of the client application. Initializes the D567 Library.
 	 * @param app
 	 * @throws Exception 
 	 * @throws IllegalStateException 
 	 * @throws SQLiteException 
 	 */
-	public static void Init(Context app, ApplicationSettings settings) throws SQLiteException, IllegalStateException, Exception
+	public static void init(Context app, ApplicationSettings settings) throws SQLiteException, IllegalStateException, Exception
 	{
 		if(app == null)
 			throw new IllegalArgumentException("Context cannot be null");
@@ -172,13 +176,14 @@ public class Application
 		//Check for a persisted session
 		if(_settings.getSessionPersistence())
 		{
+			Log.d(LOG_TAG, "Checking for an existing session to persist...");
 			SessionAdapter adapter = new SessionAdapter(app);
 			adapter.open();
 			SessionInfo info = adapter.GetLastSession();
 			adapter.close();
 			
 			if(info != null && info.getEndTime() == null)
-			{
+			{				
 				_sessionId = info.getId();
 				Log.d(LOG_TAG, "Persisting Session " + _sessionId);
 			}
@@ -194,8 +199,66 @@ public class Application
 			startSession(level);			
 			Log.d(LOG_TAG, "Auto Started Session " + _sessionId);
 		}
-		
+
+		if(_settings.getAutoRegisterBroadcastReceivers())
+			registerReceivers();
+				
 		_bInitialized = true;
+	}
+	
+	public static void onStart()
+	{
+		Log.d(LOG_TAG, "onStart");
+		//registerReceivers();			
+	}
+	
+	public static void onPause()
+	{
+		Log.d(LOG_TAG, "onPause");
+		//unregisterReceivers();
+	}
+	
+	public static void onResume()
+	{
+		Log.d(LOG_TAG, "onResume");
+		//registerReceivers();
+	}
+	
+	public static void onStop()
+	{
+		Log.d(LOG_TAG, "onStop");
+		//unregisterReceivers();
+	}
+	
+	public static void onDestroy()
+	{
+		//TO DO - Cleanup
+		
+		Log.d(LOG_TAG, "onDestroy");		
+		
+		if(_settings.getAutoRegisterBroadcastReceivers())
+			unregisterReceivers();
+	}	
+	
+	/**********************************
+	 *     (Un)Register Receivers
+	 **********************************/
+	protected static void registerReceivers()
+	{
+		//Init Broadcast Receivers
+		_settingsHandler = new SettingsRequestHandler();
+		
+		//Register Broadcast Receivers
+		_context.registerReceiver(_settingsHandler, new IntentFilter(SettingsRequest.ACTION_SETTINGS_REQUEST));
+	}
+	
+	protected static void unregisterReceivers()
+	{		
+		//Unregister Broadcast Receivers
+		_context.unregisterReceiver(_settingsHandler);
+		
+		//Cleanup
+		_settingsHandler = null;
 	}
 		
 	/**********************************

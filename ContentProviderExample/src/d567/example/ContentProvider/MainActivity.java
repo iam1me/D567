@@ -1,10 +1,16 @@
 package d567.example.ContentProvider;
 
+import com.d567.app.ApplicationSettings;
 import com.d567.provider.*;
 import com.d567.tracesession.*;
+import com.d567.app.intent.*;
+import com.d567.app.intent.action.*;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.Menu;
@@ -12,14 +18,39 @@ import android.view.Menu;
 public class MainActivity extends Activity 
 {	
 	protected static String LOG_TAG = "D567_EXAMPLE_CONTENT_PROVIDER";
+	
+	private BroadcastReceiver _receiver = null;
+	private ApplicationSettings _settings = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		String[] sessions = GetSessionIds();
-		PrintTrace(sessions);
+		Log.v(LOG_TAG, "Requesting Settings...");
+		
+		_receiver = new BroadcastReceiver() 
+			{
+				@Override
+				public void onReceive(Context context, Intent intent) 
+				{						
+					Bundle extras = this.getResultExtras(false);			
+					if(extras == null)
+					{
+						Log.e(LOG_TAG, "No settings were retrieved.");
+						return;
+					}
+					
+					_settings = new BundledSettings(extras);
+					BundledSettings.LogApplicationSettings(LOG_TAG, _settings);
+					
+					String[] sessions = GetSessionIds();
+					PrintTrace(sessions);
+				}
+			};
+		
+		
+		SettingsRequest.getSettings(this, "com.traceexample.d567", _receiver);
 	}
 
 	@Override
@@ -27,6 +58,16 @@ public class MainActivity extends Activity
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	protected void PrintSettings()
+	{
+		Log.v(LOG_TAG, "-------Retrieved Settings-------");
+		
+		String auth = _settings.getAuthority();
+		Log.v(LOG_TAG,"Authority: " + ((auth == null)? "(null)" : auth));
+		
+		Log.v(LOG_TAG, "--------------------------------");
 	}
 	
 	protected String[] GetSessionIds()
@@ -37,7 +78,7 @@ public class MainActivity extends Activity
 		try
 		{		
 			String[] columns = new String[] {SessionTable.KEY_ID};
-			c = getContentResolver().query(SessionContract.GetUri(),columns, null, null, null);
+			c = getContentResolver().query(SessionContract.GetUri(_settings.getAuthority()),columns, null, null, null);
 		}
 		catch(Exception ex)
 		{
@@ -88,7 +129,7 @@ public class MainActivity extends Activity
 				String columns[] = new String[] {TraceTable.KEY_MESSAGE};
 				String sortBy = TraceTable.KEY_TIME + " DESC";
 				
-				Uri traceUri = TraceContract.GetUri()
+				Uri traceUri = TraceContract.GetUri(_settings.getAuthority())
 								.buildUpon()
 								.appendQueryParameter(TraceContract.PARAM_SESSION_ID, cur)
 								.build();								

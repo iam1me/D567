@@ -74,7 +74,7 @@ public class SessionAdapter
 		values.putNull(SessionTable.KEY_END);
 		
 		if(bStart)
-			values.put(SessionTable.KEY_START, (bStart)? start_time : null);
+			values.put(SessionTable.KEY_START, start_time);
 		else 
 			values.putNull(SessionTable.KEY_START);		
 				
@@ -107,7 +107,7 @@ public class SessionAdapter
 			Log.e(LOG_TAG, MessageFormat.format("Failed to convert \"{0}\" to a TraceLevel. ERROR: {1}", c.getString(1), ex.getMessage()));
 		}
 		
-		SessionInfo s = new SessionInfo(session_id, c.getString(0), level, c.getLong(2), c.getLong(3));
+		SessionInfo s = new SessionInfo(session_id, c.isNull(0)? null : c.getString(0), level, c.isNull(2)? null : c.getLong(2), c.isNull(3)? null : c.getLong(3));
 		return s;
 	}
 	
@@ -199,14 +199,15 @@ public class SessionAdapter
 		if(_db == null)
 			throw new IllegalStateException("database not open");
 		
-		String selection = SessionTable.KEY_START + " is not null";		
+		String selection = MessageFormat.format("{0} is not null",SessionTable.KEY_START);		
 		String[] columns = new String[] {SessionTable.KEY_ID, SessionTable.KEY_DESC, SessionTable.KEY_LEVEL, SessionTable.KEY_START, SessionTable.KEY_END};
 		Cursor c =_db.query(SessionTable.TABLE_NAME, columns, selection, null, null, null, SessionTable.KEY_START + " DESC", "1");
 		
 		if(!c.moveToFirst())
 		{
+			Log.d(LOG_TAG, "GetLastSession - No Session Found");
 			return null;
-		}
+		}		
 		
 		TraceLevel level = TraceLevel.UNKNOWN;		
 		try
@@ -218,6 +219,6 @@ public class SessionAdapter
 			Log.e(LOG_TAG, MessageFormat.format("Failed to convert \"{0}\" to a TraceLevel. ERROR: {1}", c.getString(2), ex.getMessage()));
 		}
 		
-		return new SessionInfo(c.getString(0), c.getString(1), level, c.getLong(3), c.getLong(4));
+		return new SessionInfo(c.getString(0), c.isNull(1)? null : c.getString(1), level, c.isNull(3)? null : c.getLong(3), c.isNull(4)? null : c.getLong(4));
 	}
 }

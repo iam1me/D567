@@ -1,4 +1,4 @@
-package d567.example.tracing;
+package com.traceexample.d567;
 
 import com.d567.app.*;
 import com.d567.tracesession.*;
@@ -31,7 +31,7 @@ public class MainActivity extends Activity implements View.OnClickListener
 		
 		try
 		{
-			Application.Init(this, new MySettings());
+			Application.init(this, new MySettings());
 			Toast.makeText(this,  "Session ID: " + Application.getSessionId(), Toast.LENGTH_LONG).show();
 		}
 		catch(Exception ex)
@@ -39,6 +39,41 @@ public class MainActivity extends Activity implements View.OnClickListener
 			Log.e(LOG_TAG, ex.getMessage());
 			Toast.makeText(this, "Failed to Init D567 Application. " + ex.getMessage(), Toast.LENGTH_LONG).show();
 		}
+	}
+	
+	@Override
+	public void onStart()
+	{
+		Application.onStart();
+		super.onStart();
+	}
+	
+	@Override
+	public void onPause()
+	{
+		Application.onPause();
+		super.onPause();
+	}
+	
+	@Override
+	public void onResume()
+	{
+		Application.onResume();
+		super.onResume();
+	}
+	
+	@Override
+	public void onStop()
+	{
+		Application.onStop();
+		super.onStop();
+	}
+	
+	@Override
+	public void onDestroy()
+	{
+		Application.onDestroy();
+		super.onDestroy();
 	}
 
 	@Override

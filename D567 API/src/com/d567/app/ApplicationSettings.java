@@ -1,6 +1,8 @@
 package com.d567.app;
 
-import java.util.List;
+import java.util.ArrayList;
+
+import android.util.Log;
 
 import com.d567.tracesession.TraceLevel;
 
@@ -95,6 +97,64 @@ public abstract class ApplicationSettings
 	 * 
 	 * @return the list of supported trace modules
 	 */
-	public List<String> getTraceModules()
+	public ArrayList<String> getTraceModules()
 	{ return null; }
+	
+	/**
+	 * If true, the D567 API will dynamically register all of its broadcast 
+	 * receivers. While this simplifies things, dynamically registered
+	 * broadcast receivers do not persist after an application has been destroyed.
+	 * However, implicit broadcast receivers, which are registered with the 
+	 * application's manifest file, will persist after the application has
+	 * been destroyed.
+	 * 
+	 * Default value false
+	 * 
+	 * @return true if the D567 API will dynamically register its broadcast
+	 * 			receivers for the application, or else false if the broadcast
+	 * 			receivers will be registered with the application manifest
+	 */
+	public boolean getAutoRegisterBroadcastReceivers()
+	{ return false; }
+	
+	/**
+	 * Logs out the specified application settings under the provided tag 
+	 * @param log_tag
+	 * @param settings
+	 */
+	public static void LogApplicationSettings(String log_tag, ApplicationSettings settings)
+	{		
+		if(settings == null)
+		{
+			Log.e(log_tag, "settings are NULL");
+			return;
+		}
+		
+		Log.v(log_tag, "Authority: " + settings.getAuthority());
+		Log.v(log_tag, "Database Name: " + settings.getDatabaseName());
+		Log.v(log_tag, "AutoRegisterBroadcastReceivers: " + ((settings.getAutoRegisterBroadcastReceivers())? "TRUE" : "FALSE"));
+		Log.v(log_tag, "AutoSession: " + ((settings.getAutoSession())? "TRUE" : "FALSE"));
+		Log.v(log_tag, "SessionPersistence: " + ((settings.getSessionPersistence())? "TRUE" : "FALSE"));
+		Log.v(log_tag, "AutoSession: " + ((settings.getAutoSession())? "TRUE" : "FALSE"));
+		Log.v(log_tag, "Auto Trace Level: " + settings.getAutoSessionTraceLevel().toString());
+		Log.v(log_tag, "Use Module Filtering: " + ((settings.useTraceModuleFiltering())? "TRUE" : "FALSE"));	
+		
+		String moduleList = "";
+		ArrayList<String> modules = settings.getTraceModules();
+		if(modules == null)
+		{
+			moduleList = "(null)";
+		}
+		else
+		{
+			for(int i = 0; i < modules.size() - 1; i++)
+			{
+				moduleList += modules.get(i) + ", ";				
+			}
+			
+			moduleList += modules.get(modules.size()-1);
+		}
+		
+		Log.v(log_tag, "TraceModules: " + moduleList);
+	}
 }

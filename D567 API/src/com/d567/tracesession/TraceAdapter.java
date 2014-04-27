@@ -15,7 +15,7 @@ import android.util.Log;
 
 public class TraceAdapter 
 {
-	protected static String LOG_TAG = "D567_TRACE_ADAPTER";
+	protected final static String LOG_TAG = "D567_TRACE_ADAPTER";
 	protected DBHelper _dbHelper;
 	protected SQLiteDatabase _db;
 	

@@ -13,7 +13,7 @@ import android.util.Log;
 
 public class SessionAdapter 
 {
-	protected static String LOG_TAG = "D567_SESSION_ADAPTER";
+	protected final static String LOG_TAG = "D567_SESSION_ADAPTER";
 	private DBHelper _dbHelper = null;
 	private SQLiteDatabase _db = null;
 	

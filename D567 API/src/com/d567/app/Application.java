@@ -3,7 +3,7 @@ package com.d567.app;
 import java.util.List;
 
 import com.d567.app.intent.action.*;
-import com.d567.app.intent.reciever.*;
+import com.d567.app.intent.receiver.*;
 import com.d567.provider.*;
 import com.d567.tracesession.*;
 
@@ -26,6 +26,7 @@ public class Application
 	private static TraceLevel _level = TraceLevel.UNKNOWN;	
 	private static List<String> _activeModules = null;
 	
+	private static PackageListRequestHandler _packageHandler = null;
 	private static SettingsRequestHandler _settingsHandler = null;
 	
 	
@@ -232,8 +233,6 @@ public class Application
 	
 	public static void onDestroy()
 	{
-		//TO DO - Cleanup
-		
 		Log.d(LOG_TAG, "onDestroy");		
 		
 		if(_settings.getAutoRegisterBroadcastReceivers())
@@ -246,18 +245,22 @@ public class Application
 	protected static void registerReceivers()
 	{
 		//Init Broadcast Receivers
+		_packageHandler = new PackageListRequestHandler();
 		_settingsHandler = new SettingsRequestHandler();
 		
 		//Register Broadcast Receivers
+		_context.registerReceiver(_packageHandler, new IntentFilter(PackageListRequest.ACTION_PACKAGE_LIST_REQUEST));
 		_context.registerReceiver(_settingsHandler, new IntentFilter(SettingsRequest.ACTION_SETTINGS_REQUEST));
 	}
 	
 	protected static void unregisterReceivers()
 	{		
 		//Unregister Broadcast Receivers
+		_context.unregisterReceiver(_packageHandler);
 		_context.unregisterReceiver(_settingsHandler);
 		
 		//Cleanup
+		_packageHandler = null;
 		_settingsHandler = null;
 	}
 		

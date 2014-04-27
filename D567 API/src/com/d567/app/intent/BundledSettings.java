@@ -12,7 +12,7 @@ import com.d567.tracesession.TraceLevel;
 
 public class BundledSettings extends ApplicationSettings 
 {
-	private static String LOG_TAG = "D567_BUNDLED_SETTINGS";
+	private final static String LOG_TAG = "D567_BUNDLED_SETTINGS";
 		
 	/**********************************
 	 *        Member Variables

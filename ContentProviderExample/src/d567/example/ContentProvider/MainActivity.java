@@ -1,5 +1,7 @@
 package d567.example.ContentProvider;
 
+import java.util.ArrayList;
+
 import com.d567.app.ApplicationSettings;
 import com.d567.provider.*;
 import com.d567.tracesession.*;
@@ -19,17 +21,54 @@ public class MainActivity extends Activity
 {	
 	protected static String LOG_TAG = "D567_EXAMPLE_CONTENT_PROVIDER";
 	
-	private BroadcastReceiver _receiver = null;
+	private BroadcastReceiver _packageHandler = null;
+	private BroadcastReceiver _settingsHandler = null;
+	
+	private ArrayList<String> _packages = null;
 	private ApplicationSettings _settings = null;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		Log.v(LOG_TAG, "Requesting Settings...");
+		_packageHandler = new BroadcastReceiver()
+			{
+				@Override
+				public void onReceive(Context context, Intent intent) 
+				{
+					Bundle extras = this.getResultExtras(false);
+					if(extras == null)
+					{
+						Log.e(LOG_TAG, "No packages were retreived");
+						return;
+					}
+					
+					_packages = extras.getStringArrayList(PackageListRequest.EXTRA_PACKAGE_LIST);
+					if(_packages == null)
+					{
+						Log.e(LOG_TAG, "Package List is NULL");
+						return;
+					}
+					
+					Log.v(LOG_TAG, "--------Package List--------");
+					for(int i = 0; i < _packages.size(); i ++)
+					{
+						Log.v(LOG_TAG, i + ". " + _packages.get(i));
+					}
+					Log.v(LOG_TAG, "----------------------------\n\n");				
+										
+					for(int i = 0; i < _packages.size(); i++)
+					{
+						Log.v(LOG_TAG, "Getting Settings for " + _packages.get(i));
+						SettingsRequest.getSettings(context, _packages.get(i), _settingsHandler);
+						Log.v(LOG_TAG,"\n");
+					}
+				}			
+			};		
 		
-		_receiver = new BroadcastReceiver() 
+		_settingsHandler = new BroadcastReceiver() 
 			{
 				@Override
 				public void onReceive(Context context, Intent intent) 
@@ -48,9 +87,14 @@ public class MainActivity extends Activity
 					PrintTrace(sessions);
 				}
 			};
-		
-		
-		SettingsRequest.getSettings(this, "com.traceexample.d567", _receiver);
+	}
+	
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		Log.v(LOG_TAG, "Requesting Packages...");
+		PackageListRequest.getPackageList(this, this._packageHandler);
 	}
 
 	@Override
@@ -58,16 +102,6 @@ public class MainActivity extends Activity
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
-	}
-	
-	protected void PrintSettings()
-	{
-		Log.v(LOG_TAG, "-------Retrieved Settings-------");
-		
-		String auth = _settings.getAuthority();
-		Log.v(LOG_TAG,"Authority: " + ((auth == null)? "(null)" : auth));
-		
-		Log.v(LOG_TAG, "--------------------------------");
 	}
 	
 	protected String[] GetSessionIds()
@@ -108,9 +142,7 @@ public class MainActivity extends Activity
 	}
 	
 	protected void PrintTrace(String[] sessions)
-	{
-		Log.v(LOG_TAG, "PrintTrace");
-		
+	{		
 		if(sessions == null)
 		{
 			Log.e(LOG_TAG, "PrintTrace - sessions is NULL");

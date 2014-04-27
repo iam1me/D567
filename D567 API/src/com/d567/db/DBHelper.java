@@ -13,7 +13,7 @@ import com.d567.tracesession.TraceTable;
 
 public class DBHelper extends android.database.sqlite.SQLiteOpenHelper
 {
-	protected static String LOG_TAG = "D567_DB_HELPER";	
+	private final static String LOG_TAG = "D567_DB_HELPER";	
 	public static final int DB_VER = 1;
 
 	/**

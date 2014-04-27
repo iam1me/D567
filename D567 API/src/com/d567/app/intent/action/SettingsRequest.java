@@ -7,19 +7,19 @@ import android.content.Intent;
 
 public final class SettingsRequest 
 {
-	public static String ACTION_SETTINGS_REQUEST = "com.d567.app.intent.action.SettingsRequest";
+	public final static String ACTION_SETTINGS_REQUEST = "com.d567.app.intent.action.SettingsRequest";
 	
 	/**********************************
 	 *        Keys for Settings
 	 ***********************************/
-	public static String EXTRA_AUTHORITY = "com.d567.app.intent.action.SettingsRequest.AUTHORITY";
-	public static String EXTRA_AUTO_SESSION = "com.d567.app.intent.action.SettingsRequest.AUTO_SESSION";
-	public static String EXTRA_AUTO_SESSION_LEVEL = "com.d567.app.intent.action.SettingsRequest.AUTO_SESSION_LEVEL";
-	public static String EXTRA_SESSION_PERSISTENCE = "com.d567.app.intent.action.SettingsRequest.SESSION_PERSISTENCE";
-	public static String EXTRA_TRACE_MODULES = "com.d567.app.intent.action.SettingsRequest.TRACE_MODULES";
-	public static String EXTRA_USE_MODULE_FILTERING = "com.d567.app.intent.action.SettingsRequest.USE_MODULE_FILTERING";
-	public static String EXTRA_DATABASE_NAME = "com.d567.app.intent.action.SettingsRequest.DATABASE_NAME";
-	public static String EXTRA_AUTO_REGISTER_RECEIVERS = "com.d567.app.intent.action.SettingsRequest.AUTO_REGISTER_RECEIVERS";
+	public final static String EXTRA_AUTHORITY = "com.d567.app.intent.action.SettingsRequest.AUTHORITY";
+	public final static String EXTRA_AUTO_SESSION = "com.d567.app.intent.action.SettingsRequest.AUTO_SESSION";
+	public final static String EXTRA_AUTO_SESSION_LEVEL = "com.d567.app.intent.action.SettingsRequest.AUTO_SESSION_LEVEL";
+	public final static String EXTRA_SESSION_PERSISTENCE = "com.d567.app.intent.action.SettingsRequest.SESSION_PERSISTENCE";
+	public final static String EXTRA_TRACE_MODULES = "com.d567.app.intent.action.SettingsRequest.TRACE_MODULES";
+	public final static String EXTRA_USE_MODULE_FILTERING = "com.d567.app.intent.action.SettingsRequest.USE_MODULE_FILTERING";
+	public final static String EXTRA_DATABASE_NAME = "com.d567.app.intent.action.SettingsRequest.DATABASE_NAME";
+	public final static String EXTRA_AUTO_REGISTER_RECEIVERS = "com.d567.app.intent.action.SettingsRequest.AUTO_REGISTER_RECEIVERS";
 	
 	/**
 	 * Broadcasts an ACTION_SETTINGS_REQUEST to the specified application. If running, the target application will bundle

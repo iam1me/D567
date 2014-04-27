@@ -2,12 +2,10 @@ package com.d567.tracesession;
 
 import android.database.sqlite.*;
 import android.util.Log;
-
 import java.text.*;
 
-//import d567.db.IDatabaseTable;
 
-public class TraceTable// implements IDatabaseTable
+public class TraceTable
 {
 	protected static String LOG_TAG = "TRACE_HELPER";	
 		

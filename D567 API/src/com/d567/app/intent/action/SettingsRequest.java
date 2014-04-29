@@ -30,7 +30,7 @@ public final class SettingsRequest
 	 * @param packageName The unique packageName of the application you would like the settings for. Cannot be null. 
 	 * @param resultHandler The Broadcast Receiver used to handle the results sent back
 	 */
-	public static void getSettings(Context app, String packageName, BroadcastReceiver resultHandler)
+	public static void send(Context app, String packageName, BroadcastReceiver resultHandler)
 	{
 		Intent request = new Intent(ACTION_SETTINGS_REQUEST);
 		

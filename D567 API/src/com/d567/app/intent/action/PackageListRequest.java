@@ -25,7 +25,7 @@ public final class PackageListRequest
 	 * @param resultHandler This broadcast receiver will be called last, allowing for the calling
 	 * 				application to process the results.
 	 */
-	public static void getPackageList(Context app, BroadcastReceiver resultHandler)
+	public static void send(Context app, BroadcastReceiver resultHandler)
 	{
 		if(resultHandler == null)
 			throw new IllegalArgumentException("resultHandler is NULL");

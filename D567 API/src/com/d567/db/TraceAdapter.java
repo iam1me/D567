@@ -1,11 +1,12 @@
-package com.d567.tracesession;
+package com.d567.db;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.d567.db.*;
-
+import com.d567.tracesession.RecordNotFoundException;
+import com.d567.tracesession.TraceInfo;
+import com.d567.tracesession.TraceLevel;
 
 import android.content.*;
 import android.database.*;
@@ -141,7 +142,7 @@ public class TraceAdapter
 		if(c.getCount() == 0)
 			return null;
 		
-		TraceLevel level = TraceLevel.UNKNOWN;
+		TraceLevel level = TraceLevel.VERBOSE;
 		try
 		{
 			level = TraceLevel.valueOf(c.getString(3));
@@ -186,7 +187,7 @@ public class TraceAdapter
 		Log.d(LOG_TAG, "getSessionTrace - constructing List");
 		while(!c.isAfterLast())
 		{		
-			TraceLevel level = TraceLevel.UNKNOWN;
+			TraceLevel level = TraceLevel.VERBOSE;
 			try
 			{
 				level = TraceLevel.valueOf(c.getString(3));

@@ -1,4 +1,4 @@
-package com.d567.tracesession;
+package com.d567.db;
 
 import android.database.sqlite.*;
 import android.util.Log;

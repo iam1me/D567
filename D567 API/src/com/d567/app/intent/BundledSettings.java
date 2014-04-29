@@ -84,14 +84,14 @@ public class BundledSettings extends ApplicationSettings
 		this._bPersistSession = b.getBoolean(SettingsRequest.EXTRA_SESSION_PERSISTENCE);
 		this._bModuleFiltering = b.getBoolean(SettingsRequest.EXTRA_USE_MODULE_FILTERING);
 		
-		String strLevel = b.getString(SettingsRequest.EXTRA_AUTO_SESSION_LEVEL, TraceLevel.UNKNOWN.toString());		
+		String strLevel = b.getString(SettingsRequest.EXTRA_AUTO_SESSION_LEVEL, TraceLevel.VERBOSE.toString());		
 		try
 		{
 			_autoTraceLevel = TraceLevel.valueOf(strLevel);
 		}
 		catch(Exception ex)
 		{
-			_autoTraceLevel = TraceLevel.UNKNOWN;
+			_autoTraceLevel = TraceLevel.VERBOSE;
 			Log.e(LOG_TAG, MessageFormat.format("Failed to convert \"{0}\" to a TraceLevel", strLevel), ex);
 		}
 		

@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import com.d567.app.ApplicationSettings;
 import com.d567.provider.*;
-import com.d567.tracesession.*;
 import com.d567.app.intent.*;
 import com.d567.app.intent.action.*;
+import com.d567.db.SessionTable;
+import com.d567.db.TraceTable;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
@@ -62,7 +64,7 @@ public class MainActivity extends Activity
 					for(int i = 0; i < _packages.size(); i++)
 					{
 						Log.v(LOG_TAG, "Getting Settings for " + _packages.get(i));
-						SettingsRequest.getSettings(context, _packages.get(i), _settingsHandler);
+						SettingsRequest.send(context, _packages.get(i), _settingsHandler);
 						Log.v(LOG_TAG,"\n");
 					}
 				}			
@@ -94,7 +96,7 @@ public class MainActivity extends Activity
 	{
 		super.onStart();
 		Log.v(LOG_TAG, "Requesting Packages...");
-		PackageListRequest.getPackageList(this, this._packageHandler);
+		PackageListRequest.send(this, this._packageHandler);
 	}
 
 	@Override

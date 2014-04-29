@@ -4,7 +4,8 @@ import java.text.MessageFormat;
 
 import com.d567.app.*;
 import com.d567.db.DBHelper;
-import com.d567.tracesession.*;
+import com.d567.db.SessionTable;
+import com.d567.db.TraceTable;
 
 import android.content.*;
 import android.database.Cursor;

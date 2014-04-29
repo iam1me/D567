@@ -4,7 +4,6 @@ public class SessionInfo
 {
 	private String _id;
 	private String _desc = "";
-	private TraceLevel _level = TraceLevel.DEBUG;
 	private Long _start = null;
 	private Long _end = null;
 	
@@ -23,22 +22,12 @@ public class SessionInfo
 		_desc = desc;
 	}
 	
-	public SessionInfo(String id, String desc, TraceLevel level) throws IllegalArgumentException
+	public SessionInfo(String id, String desc, Long start, Long end) throws IllegalArgumentException
 	{
 		if(id == null) throw new IllegalArgumentException("id is NULL");
 		
 		_id = id;
 		_desc = desc;
-		_level = level;
-	}
-	
-	public SessionInfo(String id, String desc, TraceLevel level, Long start, Long end) throws IllegalArgumentException
-	{
-		if(id == null) throw new IllegalArgumentException("id is NULL");
-		
-		_id = id;
-		_desc = desc;
-		_level = level;
 		_start = start;
 		_end = end;
 	}
@@ -51,11 +40,6 @@ public class SessionInfo
 	public String getDesc()
 	{
 		return _desc;
-	}
-	
-	public TraceLevel getTraceLevel()
-	{
-		return _level;
 	}
 	
 	public Long getStartTime()
@@ -71,11 +55,6 @@ public class SessionInfo
 	public void setDesc(String desc)
 	{
 		_desc = desc;
-	}
-	
-	public void setTraceLevel(TraceLevel level)
-	{
-		_level = level;
 	}
 	
 	public void setStartTime(Long start)

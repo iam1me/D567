@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.d567.app.intent.action.*;
 import com.d567.app.intent.receiver.*;
+import com.d567.db.SessionAdapter;
 import com.d567.provider.*;
 import com.d567.tracesession.*;
 
@@ -22,12 +23,12 @@ public class Application
 	private static ApplicationSettings _settings;
 	private static boolean _bInitialized = false;
 	
-	private static String _sessionId = null;	
-	private static TraceLevel _level = TraceLevel.UNKNOWN;	
+	private static String _sessionId = null;		
 	private static List<String> _activeModules = null;
 	
 	private static PackageListRequestHandler _packageHandler = null;
 	private static SettingsRequestHandler _settingsHandler = null;
+	private static SessionStartRequestHandler _startHandler = null;
 	
 	
 	/**********************************
@@ -60,34 +61,6 @@ public class Application
 	 */
 	public static String getSessionId()
 	{ return _sessionId; }
-	
-	/**
-	 * Returns the trace level of the current session. Any trace commands
-	 * with a lower level will not be recorded. Returns TraceLevel.UNKNOWN
-	 * if there is no session running.
-	 * @return the trace level of the current session, or UNKNOWN if no session is running. 
-	 */
-	public static TraceLevel getTraceLevel()
-	{ return _level; }
-	
-	/**
-	 * Sets the trace level for the current session. Any trace commands
-	 * with a lower level will not be recorded. This cannot be modified while
-	 * no session is active. When a session is active, this cannot be set
-	 * to UNKNOWN.
-	 * @param level
-	 */
-	public static void setTraceLevel(TraceLevel level)
-	{
-		if(_sessionId == null)
-			throw new IllegalStateException("No active session");
-		
-		if(level == TraceLevel.UNKNOWN)
-			throw new IllegalArgumentException("Cannot set trace level to UNKNOWN");
-		
-		_level = level; 
-	}
-	
 	
 	/**********************************
 	 *         Trace Modules
@@ -194,10 +167,10 @@ public class Application
 		if(_sessionId == null && _settings.getAutoSession())
 		{
 			TraceLevel level = _settings.getAutoSessionTraceLevel();
-			if(level == TraceLevel.UNKNOWN)
+			if(level == TraceLevel.VERBOSE)
 				throw new Exception("AutoSessionTraceLevel is set to UNKNOWN");
 						
-			startSession(level);			
+			createSession("D567 AutoStarted Session",true);			
 			Log.d(LOG_TAG, "Auto Started Session " + _sessionId);
 		}
 
@@ -247,10 +220,12 @@ public class Application
 		//Init Broadcast Receivers
 		_packageHandler = new PackageListRequestHandler();
 		_settingsHandler = new SettingsRequestHandler();
+		_startHandler = new SessionStartRequestHandler();
 		
 		//Register Broadcast Receivers
 		_context.registerReceiver(_packageHandler, new IntentFilter(PackageListRequest.ACTION_PACKAGE_LIST_REQUEST));
 		_context.registerReceiver(_settingsHandler, new IntentFilter(SettingsRequest.ACTION_SETTINGS_REQUEST));
+		_context.registerReceiver(_startHandler, new IntentFilter(SessionStartRequest.ACTION_SESSION_START_REQUEST));
 	}
 	
 	protected static void unregisterReceivers()
@@ -258,39 +233,70 @@ public class Application
 		//Unregister Broadcast Receivers
 		_context.unregisterReceiver(_packageHandler);
 		_context.unregisterReceiver(_settingsHandler);
+		_context.unregisterReceiver(_startHandler);
 		
 		//Cleanup
 		_packageHandler = null;
 		_settingsHandler = null;
+		_startHandler = null;
 	}
 		
 	/**********************************
 	 *        Session Functions
-	 ***********************************/
+	 ***********************************/	
 	/**
-	 * Starts a new trace Session for the application. Throws an
-	 * IllegalStateException if a session is not currently active.
+	 * Creates a new trace session for the application and optionally starts it.
+	 * An IllegalStateException will be thrown if it attempts to start the session
+	 * while another session is already running
+	 * 
+	 * @param desc the description of the trace session
+	 * @param bStart determines whether or not to immediately start the session
+	 * @param level the trace level for the session
+	 * @return the Id of the new session
 	 */
-	public static void startSession(TraceLevel level ) throws SQLiteException, IllegalStateException, Exception
+	public static String createSession(String desc, boolean bStart)
 	{
-		if(_sessionId != null)
-			throw new IllegalStateException("A session is already active");
+		if(bStart && isSessionRunning())
+			throw new IllegalStateException("A new session cannot be started while one is already running");
 		
 		SessionAdapter adapter = new SessionAdapter(getContext());
 		adapter.open();		
-		SessionInfo info = adapter.CreateSession(null, true, level);		
+		SessionInfo info = adapter.CreateSession(desc, bStart);		
 		adapter.close();
 		
-		_sessionId = info.getId();
-		_level = level;
+		if(bStart)
+		{
+			_sessionId = info.getId();
+		}
+		
+		return info.getId();		
 	}
 	
 	/**
-	 * Closes the application's current trace session. Throws an
-	 * IllegalStateException if a session is not currently active.
-	 * @throws Exception 
-	 * @throws IllegalStateException 
-	 * @throws SQLiteException 
+	 * Starts/Resumes an existing trace Session for the application.
+	 * 
+	 * @param sessionId The Id of the session to be started/resumed
+	 * @throws SQLiteException thrown if an error occurs while updating the session_mstr record
+	 * @throws IllegalStateException thrown if a session is already active
+	 */
+	public static void startSession(String sessionId ) throws SQLiteException, IllegalStateException
+	{
+		if(_sessionId != null)
+			throw new IllegalStateException("A session is already active");
+
+		//Start the session
+		SessionAdapter adapter = new SessionAdapter(getContext());
+		adapter.open();
+		adapter.StartSession(sessionId);
+		adapter.close();
+		
+		_sessionId = sessionId;
+	}
+	
+	/**
+	 * Closes the application's current trace session. 
+	 * @throws IllegalStateException thrown if a session is not currently running
+	 * @throws SQLiteException thrown if an error occurs while updating the session_mstr record
 	 */
 	public static void closeSession() throws SQLiteException, IllegalStateException, Exception
 	{
@@ -303,7 +309,12 @@ public class Application
 		adapter.close();
 		
 		_sessionId = null;
-		_level = TraceLevel.UNKNOWN;
 	}
-	
+
+	/**
+	 * Indicates whether or not a session is currently running
+	 * @return true if a session is running, else false
+	 */
+	public static boolean isSessionRunning()
+	{ return (_sessionId != null); }
 }

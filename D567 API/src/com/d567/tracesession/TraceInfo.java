@@ -17,7 +17,7 @@ public class TraceInfo
 		_sessionId = SessionId;
 		_id = TraceId;
 		_module = "";
-		_level = TraceLevel.UNKNOWN;
+		_level = TraceLevel.VERBOSE;
 		_time = null;
 		_msg = "";
 	}
@@ -31,7 +31,7 @@ public class TraceInfo
 		_id = TraceId;
 		_msg = Message;		
 		_module = "";
-		_level = TraceLevel.UNKNOWN;
+		_level = TraceLevel.VERBOSE;
 		_time = null;
 	}
 	

@@ -7,14 +7,20 @@ import android.util.Log;
 import java.text.*;
 
 import com.d567.app.Application;
-import com.d567.tracesession.SessionTable;
-import com.d567.tracesession.TraceTable;
+
+/**
+ * 4/28/2014 - Updated to DB Version 2. Removed the session_trace_level
+ * 				from the session_mstr table. 
+ * 
+ * @author Ryan Williams
+ *
+ */
 
 
 public class DBHelper extends android.database.sqlite.SQLiteOpenHelper
 {
 	private final static String LOG_TAG = "D567_DB_HELPER";	
-	public static final int DB_VER = 1;
+	public static final int DB_VER = 2;
 
 	/**
 	 * Opens the Database specified in the ApplicationSettings
@@ -63,6 +69,8 @@ public class DBHelper extends android.database.sqlite.SQLiteOpenHelper
 			
 			Log.d(LOG_TAG, "Update Trace Table");
 			TraceTable.updateTable(db, oldVersion, newVersion);
+			
+			db.setTransactionSuccessful();
 		}
 		catch(Exception ex)
 		{
@@ -74,11 +82,4 @@ public class DBHelper extends android.database.sqlite.SQLiteOpenHelper
 			db.endTransaction();
 		}
 	}
-	
-	/*@Override
-	public void onOpen(SQLiteDatabase db)
-	{
-		Log.v(LOG_TAG, "onOpen");
-		super.onOpen(db);
-	}*/
 }

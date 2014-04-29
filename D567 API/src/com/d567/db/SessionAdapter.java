@@ -1,10 +1,7 @@
-package com.d567.tracesession;
+package com.d567.db;
 
 import java.text.MessageFormat;
-
-import com.d567.db.DBHelper;
-
-
+import com.d567.tracesession.SessionInfo;
 import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.*;
@@ -52,7 +49,7 @@ public class SessionAdapter
 		_db = null;		
 	}
 	
-	public SessionInfo CreateSession(String desc, boolean bStart, TraceLevel session_level) throws IllegalStateException,SQLiteException
+	public SessionInfo CreateSession(String desc, boolean bStart) throws IllegalStateException,SQLiteException
 	{
 		if(_db == null)
 			throw new IllegalStateException("database not open");
@@ -70,7 +67,6 @@ public class SessionAdapter
 		ContentValues values = new ContentValues();
 		values.put(SessionTable.KEY_ID, session_id);
 		values.put(SessionTable.KEY_DESC,  desc);
-		values.put(SessionTable.KEY_LEVEL, session_level.toString());
 		values.putNull(SessionTable.KEY_END);
 		
 		if(bStart)
@@ -81,7 +77,7 @@ public class SessionAdapter
 		
 		_db.insertOrThrow(SessionTable.TABLE_NAME, null, values);		
 		
-		SessionInfo info = new SessionInfo(session_id, desc, session_level, (bStart)? start_time : null, null);
+		SessionInfo info = new SessionInfo(session_id, desc, (bStart)? start_time : null, null);
 		return info;
 	}
 	
@@ -91,27 +87,26 @@ public class SessionAdapter
 			throw new IllegalStateException("database not open");
 		
 		Cursor c = _db.query(SessionTable.TABLE_NAME, 
-				new String[] {SessionTable.KEY_DESC, SessionTable.KEY_LEVEL, SessionTable.KEY_START, SessionTable.KEY_END},
+				new String[] {SessionTable.KEY_DESC, SessionTable.KEY_START, SessionTable.KEY_END},
 				SessionTable.KEY_ID + " = ?", new String[] {session_id}, null, null, null);
 		
 		if(!c.moveToFirst())
 			return null;
 		
-		TraceLevel level = TraceLevel.UNKNOWN;		
-		try
-		{
-			level = TraceLevel.valueOf(c.getString(1));
-		}
-		catch(Exception ex)
-		{
-			Log.e(LOG_TAG, MessageFormat.format("Failed to convert \"{0}\" to a TraceLevel. ERROR: {1}", c.getString(1), ex.getMessage()));
-		}
-		
-		SessionInfo s = new SessionInfo(session_id, c.isNull(0)? null : c.getString(0), level, c.isNull(2)? null : c.getLong(2), c.isNull(3)? null : c.getLong(3));
+		SessionInfo s = new SessionInfo(session_id, c.isNull(0)? null : c.getString(0), c.isNull(1)? null : c.getLong(1), c.isNull(2)? null : c.getLong(2));
 		return s;
 	}
 	
-	public void StartSession(String session_id) throws Exception, IllegalStateException, SQLiteException
+	/**
+	 * Sets the start time of the session to the current time
+	 * It will also set the end time to null.
+	 * 
+	 * @param session_id The id of the session to start/resume
+	 * @throws Exception
+	 * @throws IllegalStateException
+	 * @throws SQLiteException
+	 */
+	public void StartSession(String session_id) throws IllegalStateException, SQLiteException
 	{
 		if(_db == null)
 			throw new IllegalStateException("database not open");
@@ -130,11 +125,11 @@ public class SessionAdapter
 		
 		if(count == 0)
 		{
-			throw new Exception(MessageFormat.format("Failed Start Session {0}", session_id));
+			throw new SQLiteException(MessageFormat.format("Failed Start Session {0}", session_id));
 		}		
 	}
 
-	public void EndSession(String session_id) throws Exception, IllegalStateException, SQLiteException
+	public void EndSession(String session_id) throws IllegalStateException, SQLiteException
 	{
 		if(_db == null)
 			throw new IllegalStateException("database not open");
@@ -152,11 +147,11 @@ public class SessionAdapter
 		
 		if(count == 0)
 		{
-			throw new Exception(MessageFormat.format("No Session with ID {0} was found to be updated", session_id));
+			throw new SQLiteException(MessageFormat.format("No Session with ID {0} was found to be updated", session_id));
 		}		
 	}
 	
-	public void DeleteSession(String session_id) throws Exception, IllegalStateException, SQLiteException
+	public void DeleteSession(String session_id) throws IllegalStateException, SQLiteException
 	{
 		if(_db == null)
 			throw new IllegalStateException("database not open");
@@ -178,12 +173,12 @@ public class SessionAdapter
 			rows = _db.delete(SessionTable.TABLE_NAME, session_selection, session_args); 
 			if(rows == 0)
 			{
-				throw new Exception(MessageFormat.format("No Session with ID {0} was found to be deleted", session_id));
+				throw new SQLiteException(MessageFormat.format("No Session with ID {0} was found to be deleted", session_id));
 			}
 			
 			_db.setTransactionSuccessful();
 		}
-		catch(Exception ex)
+		catch(SQLiteException ex)
 		{
 			Log.e(LOG_TAG, "Failed to delete the session: " + session_id, ex);
 			throw ex;
@@ -200,7 +195,7 @@ public class SessionAdapter
 			throw new IllegalStateException("database not open");
 		
 		String selection = MessageFormat.format("{0} is not null",SessionTable.KEY_START);		
-		String[] columns = new String[] {SessionTable.KEY_ID, SessionTable.KEY_DESC, SessionTable.KEY_LEVEL, SessionTable.KEY_START, SessionTable.KEY_END};
+		String[] columns = new String[] {SessionTable.KEY_ID, SessionTable.KEY_DESC, SessionTable.KEY_START, SessionTable.KEY_END};
 		Cursor c =_db.query(SessionTable.TABLE_NAME, columns, selection, null, null, null, SessionTable.KEY_START + " DESC", "1");
 		
 		if(!c.moveToFirst())
@@ -209,16 +204,6 @@ public class SessionAdapter
 			return null;
 		}		
 		
-		TraceLevel level = TraceLevel.UNKNOWN;		
-		try
-		{
-			level = TraceLevel.valueOf(c.getString(2));
-		}
-		catch(Exception ex)
-		{
-			Log.e(LOG_TAG, MessageFormat.format("Failed to convert \"{0}\" to a TraceLevel. ERROR: {1}", c.getString(2), ex.getMessage()));
-		}
-		
-		return new SessionInfo(c.getString(0), c.isNull(1)? null : c.getString(1), level, c.isNull(3)? null : c.getLong(3), c.isNull(4)? null : c.getLong(4));
+		return new SessionInfo(c.getString(0), c.isNull(1)? null : c.getString(1), c.isNull(2)? null : c.getLong(2), c.isNull(3)? null : c.getLong(3));
 	}
 }

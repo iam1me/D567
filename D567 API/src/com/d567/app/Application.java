@@ -167,8 +167,6 @@ public class Application
 		if(_sessionId == null && _settings.getAutoSession())
 		{
 			TraceLevel level = _settings.getAutoSessionTraceLevel();
-			if(level == TraceLevel.VERBOSE)
-				throw new Exception("AutoSessionTraceLevel is set to UNKNOWN");
 						
 			createSession("D567 AutoStarted Session",true);			
 			Log.d(LOG_TAG, "Auto Started Session " + _sessionId);

@@ -1,6 +1,7 @@
 package com.traceexample.d567;
 
 import com.d567.app.*;
+import com.d567.tracesession.TraceLevel;
 
 public class MySettings extends ApplicationSettings
 {
@@ -19,5 +20,9 @@ public class MySettings extends ApplicationSettings
 	@Override
 	public boolean getAutoRegisterBroadcastReceivers()
 	{ return true; }
+	
+	@Override 
+	public TraceLevel getAutoSessionTraceLevel()
+	{ return TraceLevel.VERBOSE;}
 
 }

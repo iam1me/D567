@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
 
 public class TraceSessionProvider extends ContentProvider 
 {
@@ -19,23 +20,8 @@ public class TraceSessionProvider extends ContentProvider
 	private static final int CONTENT_SESSION = 1;
 	private static final int CONTENT_TRACE = 2;
 	
-	private static UriMatcher _matcher = null;
-	private static boolean _bInitialized = false;
-	
-	public static final void Init(ApplicationSettings appSettings)
-	{
-		if(_bInitialized)
-			throw new IllegalStateException("TraceSessionProvider already Initialized");
-		
-		String authority = appSettings.getAuthority();
-		
-		_matcher = new UriMatcher(UriMatcher.NO_MATCH);
-		_matcher.addURI(authority, SessionContract.PATH, CONTENT_SESSION);
-		_matcher.addURI(authority, TraceContract.PATH, CONTENT_TRACE);
-		
-		_bInitialized = true;		
-	}
-		
+	private ApplicationSettings _settings = null;
+	private UriMatcher _matcher = null;	
 	private DBHelper _dbHelper = null;
 	private SQLiteDatabase _db = null;
 	
@@ -48,9 +34,6 @@ public class TraceSessionProvider extends ContentProvider
 	@Override
 	public String getType(Uri uri)
 	{
-		if(!_bInitialized)
-			throw new IllegalStateException("TraceSessionProvider has not been Initialized");
-		
 		switch(_matcher.match(uri))
 		{
 			case CONTENT_SESSION:
@@ -95,6 +78,33 @@ public class TraceSessionProvider extends ContentProvider
 	@Override
 	public boolean onCreate() 
 	{		
+		String authority;
+		if(Application.isInitialized())
+		{
+			_settings = Application.getSettings();
+			authority = _settings.getAuthority();
+		}
+		else
+		{		
+			try
+			{
+				_settings = ResourceSettings.loadSettings(getContext());
+			}
+			catch (Exception e) 
+			{
+				Log.e(LOG_TAG, "Failed to Load Settings", e);
+				return false;
+			}
+			
+			authority = _settings.getAuthority();
+		}
+
+		Log.d(LOG_TAG, "onCreate - Authority: " + authority);
+		
+		_matcher = new UriMatcher(UriMatcher.NO_MATCH);
+		_matcher.addURI(authority, SessionContract.PATH, CONTENT_SESSION);
+		_matcher.addURI(authority, TraceContract.PATH, CONTENT_TRACE);
+		
 		return true;
 	}
 	
@@ -103,7 +113,7 @@ public class TraceSessionProvider extends ContentProvider
 		if(_db != null && !_db.isOpen())
 			return;
 		
-		_dbHelper = new DBHelper(getContext());
+		_dbHelper = new DBHelper(getContext(),_settings);
 		_db = _dbHelper.getReadableDatabase();
 	}
 	
@@ -119,10 +129,7 @@ public class TraceSessionProvider extends ContentProvider
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) 
-	{
-		if(!_bInitialized)
-			throw new IllegalStateException("TraceSessionProvider has not been Initialized");
-
+	{		
 		openDB();		
 		switch(_matcher.match(uri))
 		{

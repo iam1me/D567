@@ -31,50 +31,21 @@ public class MainActivity extends Activity implements View.OnClickListener
 		btnAdd.setOnClickListener(this);
 		btnClear.setOnClickListener(this);
 		
-		try
+/*		try
 		{
-			Application.init(this, new MySettings());
+			Application.init(this);
 			Toast.makeText(this,  "Session ID: " + Application.getSessionId(), Toast.LENGTH_LONG).show();
 		}
 		catch(Exception ex)
 		{
 			Log.e(LOG_TAG, ex.getMessage());
 			Toast.makeText(this, "Failed to Init D567 Application. " + ex.getMessage(), Toast.LENGTH_LONG).show();
-		}
-	}
-	
-	@Override
-	public void onStart()
-	{
-		Application.onStart();
-		super.onStart();
-	}
-	
-	@Override
-	public void onPause()
-	{
-		Application.onPause();
-		super.onPause();
-	}
-	
-	@Override
-	public void onResume()
-	{
-		Application.onResume();
-		super.onResume();
-	}
-	
-	@Override
-	public void onStop()
-	{
-		Application.onStop();
-		super.onStop();
+		}*/
 	}
 	
 	@Override
 	public void onDestroy()
 	{
-		Application.onDestroy();
 		super.onDestroy();
 	}
 
@@ -115,7 +86,7 @@ public class MainActivity extends Activity implements View.OnClickListener
 		
 		try
 		{
-			TraceAdapter adapter = new TraceAdapter(this);
+			TraceAdapter adapter = new TraceAdapter(this,Application.getSettings());
 			adapter.open();
 			List<TraceInfo> entries = adapter.getSessionTrace(Application.getSessionId());
 			adapter.close();
@@ -158,7 +129,7 @@ public class MainActivity extends Activity implements View.OnClickListener
 	{
 		try
 		{
-			TraceAdapter adapter = new TraceAdapter(this);
+			TraceAdapter adapter = new TraceAdapter(this,Application.getSettings());
 			adapter.open();
 			long count = adapter.deleteSessionTrace(Application.getSessionId());
 			adapter.close();

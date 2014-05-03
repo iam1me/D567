@@ -1,6 +1,8 @@
 package com.d567.db;
 
 import java.text.MessageFormat;
+
+import com.d567.app.ApplicationSettings;
 import com.d567.tracesession.SessionInfo;
 import android.content.*;
 import android.database.Cursor;
@@ -14,9 +16,9 @@ public class SessionAdapter
 	private DBHelper _dbHelper = null;
 	private SQLiteDatabase _db = null;
 	
-	public SessionAdapter(Context app)
+	public SessionAdapter(Context app, ApplicationSettings settings)
 	{
-		_dbHelper = new DBHelper(app);
+		_dbHelper = new DBHelper(app, settings);
 	}
 	
 	protected void finalize() throws Throwable
@@ -49,7 +51,7 @@ public class SessionAdapter
 		_db = null;		
 	}
 	
-	public SessionInfo CreateSession(String desc, boolean bStart) throws IllegalStateException,SQLiteException
+	public SessionInfo CreateSession(String desc) throws IllegalStateException,SQLiteException
 	{
 		if(_db == null)
 			throw new IllegalStateException("database not open");
@@ -57,27 +59,19 @@ public class SessionAdapter
 		String session_id = java.util.UUID.randomUUID().toString();
 		
 		long start_time = 0;
-		if(bStart)
-		{
-			Time t = new Time(Time.getCurrentTimezone());
-			t.setToNow();
-			start_time = t.toMillis(false);
-		}
+		Time t = new Time(Time.getCurrentTimezone());
+		t.setToNow();
+		start_time = t.toMillis(false);
 		
 		ContentValues values = new ContentValues();
 		values.put(SessionTable.KEY_ID, session_id);
 		values.put(SessionTable.KEY_DESC,  desc);
-		values.putNull(SessionTable.KEY_END);
-		
-		if(bStart)
-			values.put(SessionTable.KEY_START, start_time);
-		else 
-			values.putNull(SessionTable.KEY_START);		
-				
+		values.put(SessionTable.KEY_START, start_time);
+		values.putNull(SessionTable.KEY_END);						
 		
 		_db.insertOrThrow(SessionTable.TABLE_NAME, null, values);		
 		
-		SessionInfo info = new SessionInfo(session_id, desc, (bStart)? start_time : null, null);
+		SessionInfo info = new SessionInfo(session_id, desc, start_time, null);
 		return info;
 	}
 	
@@ -98,18 +92,21 @@ public class SessionAdapter
 	}
 	
 	/**
-	 * Sets the start time of the session to the current time
+	 * Resumes an existing session
 	 * It will also set the end time to null.
 	 * 
 	 * @param session_id The id of the session to start/resume
 	 * @throws Exception
 	 * @throws IllegalStateException
 	 * @throws SQLiteException
-	 */
-	public void StartSession(String session_id) throws IllegalStateException, SQLiteException
+	 *
+	public void ResumeSession(String session_id) throws IllegalStateException, SQLiteException
 	{
 		if(_db == null)
 			throw new IllegalStateException("database not open");
+			
+		if(session_id == null)
+			throw new IllegalArgumentException("session_id is NULL");
 		
 		Time t = new Time(Time.getCurrentTimezone());
 		t.setToNow();
@@ -127,7 +124,7 @@ public class SessionAdapter
 		{
 			throw new SQLiteException(MessageFormat.format("Failed Start Session {0}", session_id));
 		}		
-	}
+	}*/
 
 	public void EndSession(String session_id) throws IllegalStateException, SQLiteException
 	{
@@ -147,14 +144,17 @@ public class SessionAdapter
 		
 		if(count == 0)
 		{
-			throw new SQLiteException(MessageFormat.format("No Session with ID {0} was found to be updated", session_id));
+			throw new SQLiteException(MessageFormat.format("Failed to update Session with ID {0}", session_id));
 		}		
 	}
 	
-	public void DeleteSession(String session_id) throws IllegalStateException, SQLiteException
+	public void DeleteSession(String session_id) throws IllegalArgumentException, IllegalStateException, SQLiteException
 	{
 		if(_db == null)
 			throw new IllegalStateException("database not open");
+		
+		if(session_id == null)
+			throw new IllegalArgumentException("session_id is NULL");
 		
 		_db.beginTransaction();		
 		try

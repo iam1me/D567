@@ -1,3 +1,5 @@
 description.autobuilding=false
+description.buildorder=D567 API/D567App/TraceExample/TransitionExample/ContentProviderExample
+description.defaultbuildorder=false
 eclipse.preferences.version=1
 version=1

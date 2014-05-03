@@ -4,7 +4,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.d567.tracesession.RecordNotFoundException;
+import com.d567.app.ApplicationSettings;
 import com.d567.tracesession.TraceInfo;
 import com.d567.tracesession.TraceLevel;
 
@@ -20,10 +20,10 @@ public class TraceAdapter
 	protected DBHelper _dbHelper;
 	protected SQLiteDatabase _db;
 	
-	public TraceAdapter(Context app)
+	public TraceAdapter(Context app, ApplicationSettings settings)
 	{
-		Log.d(LOG_TAG, "Constructor");
-		_dbHelper = new DBHelper(app);
+		//Log.d(LOG_TAG, "Constructor");
+		_dbHelper = new DBHelper(app,settings);
 		_db = null;
 	}
 	
@@ -82,7 +82,7 @@ public class TraceAdapter
 		if(_db == null)
 			throw new IllegalStateException("database not open");
 		
-		Log.d(LOG_TAG, "insertTrace");
+		//Log.d(LOG_TAG, "insertTrace");
 		
 		String id = java.util.UUID.randomUUID().toString();
 		
@@ -97,11 +97,11 @@ public class TraceAdapter
 		now.setToNow();
 		values.put(TraceTable.KEY_TIME, now.toMillis(false));
 		
-		Log.d(LOG_TAG, "insertTrace - Inserting Trace Record");
+		//Log.d(LOG_TAG, "insertTrace - Inserting Trace Record");
 		
 		long row = _db.insertOrThrow(TraceTable.TABLE_NAME, null, values);
 		
-		Log.d(LOG_TAG, "insertTrace - Insert Complete. Row = " + row);
+		//Log.d(LOG_TAG, "insertTrace - Insert Complete. Row = " + row);
 		
 		return new TraceInfo(session_id, id, message, module, level, now.toMillis(false));
 	}
@@ -164,7 +164,7 @@ public class TraceAdapter
 		if(session_id == null)
 			throw new IllegalArgumentException("session_id cannot be null");
 		
-		Log.d(LOG_TAG, "getSessionTrace - SessionId: " + session_id);
+		//Log.d(LOG_TAG, "getSessionTrace - SessionId: " + session_id);
 		
 		String[] columns = new String[] {TraceTable.KEY_ID, TraceTable.KEY_MESSAGE,TraceTable.KEY_MODULE, TraceTable.KEY_LEVEL, TraceTable.KEY_TIME};
 		
@@ -176,7 +176,7 @@ public class TraceAdapter
 		Cursor c = _db.query(TraceTable.TABLE_NAME, columns, selection, selectArgs, 
 				null, null, orderBy);
 		
-		Log.d(LOG_TAG, "getSessionTrace - " + c.getCount() + " records found");
+		//Log.d(LOG_TAG, "getSessionTrace - " + c.getCount() + " records found");
 				
 		List<TraceInfo> traceList = new ArrayList<TraceInfo>();
 		if(!c.moveToFirst())
@@ -184,7 +184,7 @@ public class TraceAdapter
 			return traceList;
 		}		
 		
-		Log.d(LOG_TAG, "getSessionTrace - constructing List");
+		//Log.d(LOG_TAG, "getSessionTrace - constructing List");
 		while(!c.isAfterLast())
 		{		
 			TraceLevel level = TraceLevel.VERBOSE;
@@ -227,7 +227,7 @@ public class TraceAdapter
 		
 		if(count == 0)
 		{
-			throw new RecordNotFoundException(
+			throw new SQLiteException(
 					MessageFormat.format("No Trace Record Found With ID: {0}", info.getId()));
 		}		
 	}

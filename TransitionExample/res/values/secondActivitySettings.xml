@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="secondActivity.title">The Second Activity</string>
+    <string name="btnPrevious">Previous</string>
+    
+</resources>

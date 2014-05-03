@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.transitionexample"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="18" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:name="com.d567.app.Application">
+                
+        <activity
+            android:name="com.transitionexample.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>           
+        </activity>
+        
+        <activity
+            android:name="com.transitionexample.SecondActivity"
+            android:label="@string/secondActivity.title"
+            />
+
+        <provider android:authorities="com.transitionexample.provider"
+            android:exported="true" 
+            android:name="com.d567.provider.TraceSessionProvider"/>
+        
+        <receiver android:name="com.d567.receiver.PackageListReceiver">
+            <intent-filter>
+            	<action android:name="com.d567.request.packagelistrequest" />
+            </intent-filter>
+        </receiver>
+        
+        <receiver android:name="com.d567.receiver.SettingsReceiver">
+            <intent-filter>
+                <action android:name="com.d567.request.settingsrequest" />
+            </intent-filter>
+        </receiver>
+        
+    </application>
+
+</manifest>

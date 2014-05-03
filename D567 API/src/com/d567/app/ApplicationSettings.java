@@ -1,11 +1,6 @@
 package com.d567.app;
 
-import java.util.ArrayList;
-
 import android.util.Log;
-
-import com.d567.tracesession.TraceLevel;
-
 
 public abstract class ApplicationSettings 
 {	
@@ -46,16 +41,6 @@ public abstract class ApplicationSettings
 	}
 	
 	/**
-	 * Specifies the Trace Level to use when auto-starting a session.
-	 * 
-	 * Default Value is TraceLevel.VERBOSE
-	 * 
-	 * @return
-	 */
-	public TraceLevel getAutoSessionTraceLevel()
-	{ return TraceLevel.VERBOSE; }
-	
-	/**
 	 * Determines whether or not to persist a session across different
 	 * instantiations of the application. This only applies if a 
 	 * session is running when the application exits. If no session is
@@ -71,34 +56,6 @@ public abstract class ApplicationSettings
 	{
 		return false;
 	}
-	
-	/**
-	 * Trace Modules allow the client application to categorize trace
-	 * messages using user-defined labels. When enabled, a given trace
-	 * module must first be added to the list of active modules before
-	 * the trace messages for that module will recorded. 
-	 * 
-	 * Default value is false
-	 * 
-	 * @return true if trace messages should only be recorded if an active
-	 * 			trace module is specified to the trace command
-	 */
-	public boolean useTraceModuleFiltering()
-	{ 
-		return false; 
-	}
-	
-	/**
-	 * Returns a list of all the applications supported Trace Modules.
-	 * When Trace Module Filter is enabled, this list will be supplied
-	 * to the D567 Application to enable tracing on specific modules.
-	 * 
-	 * Default value is null
-	 * 
-	 * @return the list of supported trace modules
-	 */
-	public ArrayList<String> getTraceModules()
-	{ return null; }
 	
 	/**
 	 * If true, the D567 API will dynamically register all of its broadcast 
@@ -135,26 +92,5 @@ public abstract class ApplicationSettings
 		Log.v(log_tag, "AutoRegisterBroadcastReceivers: " + ((settings.getAutoRegisterBroadcastReceivers())? "TRUE" : "FALSE"));
 		Log.v(log_tag, "AutoSession: " + ((settings.getAutoSession())? "TRUE" : "FALSE"));
 		Log.v(log_tag, "SessionPersistence: " + ((settings.getSessionPersistence())? "TRUE" : "FALSE"));
-		Log.v(log_tag, "AutoSession: " + ((settings.getAutoSession())? "TRUE" : "FALSE"));
-		Log.v(log_tag, "Auto Trace Level: " + settings.getAutoSessionTraceLevel().toString());
-		Log.v(log_tag, "Use Module Filtering: " + ((settings.useTraceModuleFiltering())? "TRUE" : "FALSE"));	
-		
-		String moduleList = "";
-		ArrayList<String> modules = settings.getTraceModules();
-		if(modules == null)
-		{
-			moduleList = "(null)";
-		}
-		else
-		{
-			for(int i = 0; i < modules.size() - 1; i++)
-			{
-				moduleList += modules.get(i) + ", ";				
-			}
-			
-			moduleList += modules.get(modules.size()-1);
-		}
-		
-		Log.v(log_tag, "TraceModules: " + moduleList);
 	}
 }

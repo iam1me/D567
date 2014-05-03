@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="d567.provider.authority">com.traceexample.d567.provider</string>
+    <bool name="d567.session.autostart">true</bool>
+    <bool name="d567.session.persist">true</bool>
+    <bool name="d567.receivers.autoregister">true</bool>
+</resources>

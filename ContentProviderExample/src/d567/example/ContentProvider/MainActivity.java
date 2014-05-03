@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 import com.d567.app.ApplicationSettings;
 import com.d567.provider.*;
-import com.d567.app.intent.*;
-import com.d567.app.intent.action.*;
+import com.d567.request.*;
 import com.d567.db.SessionTable;
 import com.d567.db.TraceTable;
 
@@ -127,6 +126,7 @@ public class MainActivity extends Activity
 		if(!c.moveToFirst())
 		{
 			Log.v(LOG_TAG, "Failed to move to first result");
+			c.close();
 			return null;
 		}		
 		
@@ -140,6 +140,7 @@ public class MainActivity extends Activity
 			c.moveToNext();
 		}		
 		
+		c.close();
 		return sessions;		
 	}
 	
@@ -179,12 +180,14 @@ public class MainActivity extends Activity
 			if(c.getCount() == 0)
 			{
 				Log.i(LOG_TAG, "No Trace for this Session");
+				c.close();
 				continue;
 			}
 			
 			if(!c.moveToFirst())
 			{
 				Log.e(LOG_TAG, "Failed to move to first result");
+				c.close();
 				continue;
 			}
 			
@@ -197,6 +200,8 @@ public class MainActivity extends Activity
 				j++;				
 				c.moveToNext();
 			}
+			
+			c.close();
 		}
 		
 	}

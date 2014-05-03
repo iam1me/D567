@@ -39,7 +39,7 @@ public class Trace
 		if(Application.isSessionRunning())
 		{
 			String formattedTrace = MessageFormat.format(message, parameters);
-			TraceAdapter adapter = new TraceAdapter(Application.getContext());
+			TraceAdapter adapter = new TraceAdapter(Application.getContext(),Application.getSettings());
 			adapter.open();		
 			adapter.insertTrace(Application.getSessionId(), module, level, formattedTrace);		
 			adapter.close();

@@ -6,7 +6,7 @@ import android.util.Log;
 
 import java.text.*;
 
-import com.d567.app.Application;
+import com.d567.app.ApplicationSettings;
 
 /**
  * 4/28/2014 - Updated to DB Version 2. Removed the session_trace_level
@@ -26,9 +26,9 @@ public class DBHelper extends android.database.sqlite.SQLiteOpenHelper
 	 * Opens the Database specified in the ApplicationSettings
 	 * @param app	The Context used for accessing the database
 	 */
-	public DBHelper(Context app)
+	public DBHelper(Context app, ApplicationSettings settings)
 	{
-		super(app, Application.getSettings().getDatabaseName(), null, DB_VER);	
+		super(app, settings.getDatabaseName(), null, DB_VER);	
 	}
 
 	@Override

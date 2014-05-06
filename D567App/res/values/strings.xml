@@ -1,5 +1,12 @@
 <resources>
-
-    <string name="app_name">D567App</string>
-
+    <string name="app_name">D567 App</string>
+    <string name="app_list">Options</string>
+    <string name="app_menu_title">Selected App</string>
+    <string name="main_list">Active Applications</string>
+    <string name="main_menu_title">Application List</string>
+    <string name="action_settings">Action Settings</string>        
+    <string name="btnSessionsText">Sessions</string>        
+    <string name="btnStatesText">States</string>        
+    <string name="btnViewSettingsText">Settings</string>        
+     
 </resources>

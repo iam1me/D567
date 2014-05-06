@@ -1,10 +1,10 @@
 package com.d567.UI;
 
-import android.os.Bundle;
-import android.app.Activity;
-import android.view.Menu;
+import com.d567app.R;
 
-import com.example.d567app.R;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Menu;
 
 
 public class MainActivity extends Activity {

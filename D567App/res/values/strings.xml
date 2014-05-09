@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">D567 App</string>
+    <string name="app_name">D567 AppTester</string>
     <string name="app_list">Options</string>
     <string name="app_menu_title">Selected App</string>
     <string name="main_list">Active Applications</string>
@@ -7,6 +7,9 @@
     <string name="action_settings">Action Settings</string>        
     <string name="btnSessionsText">Sessions</string>        
     <string name="btnStatesText">States</string>        
-    <string name="btnViewSettingsText">Settings</string>        
+    <string name="btnViewSettingsText">Settings</string>    
+    
+    <string name="hello_world">Hello World!</string>    
+    
      
 </resources>

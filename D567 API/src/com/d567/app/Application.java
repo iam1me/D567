@@ -1,7 +1,10 @@
 package com.d567.app;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+
 import com.d567.db.SessionAdapter;
 import com.d567.receiver.*;
+import com.d567.request.DisplayErrorRequest;
 import com.d567.request.PackageListRequest;
 import com.d567.request.SessionDeleteRequest;
 import com.d567.request.SessionStartRequest;
@@ -9,13 +12,19 @@ import com.d567.request.SessionStopRequest;
 import com.d567.request.SettingsRequest;
 import com.d567.tracesession.*;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.os.Process;
 import android.util.Log;
 
-public class Application extends android.app.Application
+public class Application extends android.app.Application implements UncaughtExceptionHandler
 {	
 	/**********************************
 	 *        Member Variables
@@ -35,6 +44,8 @@ public class Application extends android.app.Application
 	private static SessionStartReceiver _startHandler = null;
 	private static SessionStopReceiver _stopHandler = null;
 	private static SessionDeleteReceiver _deleteHandler = null;
+	
+	private static UncaughtExceptionHandler _defaultUEH = null;
 	
 	
 	/**********************************
@@ -79,6 +90,8 @@ public class Application extends android.app.Application
 		{
 			Log.d(LOG_TAG, "Initializing D567 API");
 			init(getApplicationContext());
+			_defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+			Thread.setDefaultUncaughtExceptionHandler(this);
 		}
 		catch(Exception ex)
 		{
@@ -88,14 +101,13 @@ public class Application extends android.app.Application
 	
 	
 	/**
-	 * This function should be called in the OnCreate function
 	 * Initializes the D567 API.
 	 * @param app
 	 * @throws Exception 
 	 * @throws IllegalStateException 
 	 * @throws SQLiteException 
 	 */
-	protected static void init(Context app) throws Exception
+	public static void init(Context app) throws Exception
 	{
 		if(app == null)
 			throw new IllegalArgumentException("Context cannot be null");
@@ -140,7 +152,7 @@ public class Application extends android.app.Application
 
 		if(_settings.getAutoRegisterBroadcastReceivers())
 			registerReceivers();
-				
+		
 		_bInitialized = true;
 	}
 	
@@ -255,4 +267,24 @@ public class Application extends android.app.Application
 	 */
 	public static boolean isSessionRunning()
 	{ return (_sessionId != null); }
+
+	
+	/** uncaughtException
+	 * The defaultUncaughtExceptionHandler for the main thread of the application.
+	 * If such a fatal exception occurs, this will catch it and write out the exception
+	 * and stack trace to the currently running trace session, if applicable. It will then
+	 * send a request to the D567 App to display the exception information 
+	 **/
+	@Override
+	public void uncaughtException(Thread thread, Throwable ex) 
+	{
+		//Log.e(LOG_TAG, "D567 API - Tracing Uncaught Exception Handler", ex);		
+		Trace.Error(LOG_TAG, "A Fatal Exception Occured in the Application's Main Thread: " + ex.getMessage());
+
+		//Log.d(LOG_TAG, "Sending Display Error Request");
+		DisplayErrorRequest.send(this, ex);		
+		
+		//Log.d(LOG_TAG, "Killing Process");
+		Process.killProcess(Process.myPid());
+	}
 }

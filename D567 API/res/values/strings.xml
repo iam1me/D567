@@ -1,5 +1,8 @@
 <resources>
 
     <string name="app_name">Debug Library</string>
+    <string name="exceptionLabel">Exception:</string>
+    <string name="stackTraceLabel">Stack Trace:</string>
+    <string name="txtClose">Close Application</string>
 
 </resources>

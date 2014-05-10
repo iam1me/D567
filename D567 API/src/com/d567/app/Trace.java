@@ -2,8 +2,6 @@ package com.d567.app;
 
 import java.text.MessageFormat;
 
-import android.util.Log;
-
 import com.d567.db.TraceAdapter;
 import com.d567.tracesession.TraceLevel;
 

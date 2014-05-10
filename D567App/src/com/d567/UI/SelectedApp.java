@@ -1,7 +1,4 @@
-package com.d567.UI;
-
-
-import com.d567app.R;
+package com.d567.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,8 +6,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-
-
 
 public class SelectedApp extends Activity {
 	
@@ -106,7 +101,7 @@ public class SelectedApp extends Activity {
 	//I don't know if or how we'll use the options menu, but I'll leave this placeholder
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.main_menu, menu);
 		return true;
 	}
 }

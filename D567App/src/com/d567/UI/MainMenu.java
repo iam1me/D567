@@ -1,47 +1,146 @@
-package com.d567.UI;
+package com.d567.ui;
 
-import com.d567app.R;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.d567.app.ApplicationSettings;
+import com.d567.request.*;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
-public class MainMenu extends Activity {
-
-	//variables for repeater
+public class MainMenu extends Activity implements OnItemClickListener
+{
 	int selectedAppId = 0;
 	String selectedAppName = "";
+
+	List<String> appList = new ArrayList<String>();
+	
+	//D567 code
+	protected static String LOG_TAG = "D567_APP";
+	protected static String PACKAGE_NAME = "com.d567app.package_name";
+	private BroadcastReceiver _packageHandler = null;
+	private BroadcastReceiver _settingsHandler = null;
+	
+	private ArrayList<String> _packages = null;
+	private ApplicationSettings _settings = null;
+
+	private ListView lvClientApps;		
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main_menu);
-	
+		setContentView(R.layout.activity_main_menu);
 		
-		Log.e("MainMenu", "OnCreate Initialized");
-		
-		
-		//create intent to look for active debuggable apps.
-//		Intent activeApps = new Intent(getApplicationContext(), SelectedApp.class );
-
-		Log.e("MainMenu", "activeApps Intent Initialized");
-
-		
-		//generate list and display it in LVClientApps
-		final ListView lvClientApps = (ListView) findViewById(R.id.LVClientApps);
-		
-		Log.e("MainMenu", "lvClientApps Initialized");
-
-		
-		if(lvClientApps.getCount() > 0)
+		_packageHandler = new BroadcastReceiver()
 		{
+			@Override
+			public void onReceive(Context context, Intent intent)
+			{
+				Bundle extras = this.getResultExtras(false);
+				if(extras == null)
+				{					
+					Log.e(LOG_TAG, "No packages retrieved");
+					return;
+				}
+				
+				_packages = extras.getStringArrayList(PackageListRequest.EXTRA_PACKAGE_LIST);
+				if(_packages == null)
+				{
+					//note: this shouldn't happen
+					Log.e(LOG_TAG, "Package List is NULL");
+					return;
+				}
+				
+				initListView();			
+			}
+		};
 			
-			Log.e("MainMenu", "At least one Client app found.");
-			Log.e("MainMenu", "initializing lvClientApps onClick");
+	}
+	
+	private class MyAdapter extends ArrayAdapter<String>
+	{
+		private ArrayList<String> items;
+		
+		public MyAdapter(Context context, int textViewResourceId, ArrayList<String> items) 
+		{
+			super(context, textViewResourceId, items);
+			this.items = items;
+		}
+	
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
+			View v = convertView;
+			if (v == null)
+			{
+				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				v = vi.inflate(R.layout.activity_main_row, null);
+			}
+			
+			String s = items.get(position);
+			if(s != null)
+			{
+				TextView tv = (TextView) v.findViewById(R.id.packageName);
+				tv.setText(s);
+			}
+			return v;
+		}
+	}
+	
+	//generate list and display it in LVClientApps
+	void initListView()
+	{
+		
+		Log.v(LOG_TAG, "initListView started");
+		
+		for(int i=0; i < _packages.size(); i++){
+			appList.add(_packages.get(i));
+			Log.v(LOG_TAG, "package " + appList.get(i) + " added to list");
+		}
+
+		Log.v(LOG_TAG, "all packages received");
+
+//		ListAdapter adapter = new ListAdapter(this,appList, android.R.layout.simple_list_item_1);
+		MyAdapter adapter = new MyAdapter(this, R.layout.activity_main_row, _packages);
+
+		Log.v(LOG_TAG, "adapter initialized");
+		
+		try 
+		{
+			lvClientApps = (ListView) findViewById(R.id.LVClientApps);
+
+			lvClientApps.setAdapter( adapter);
+			
+			lvClientApps.setOnItemClickListener(this);
+		}
+		catch(Exception e)
+		{
+			Log.e(LOG_TAG, "Failed to set adapter", e);
+			return;
+		}
+		Log.v("MainMenu", "lvClientApps Initialized");		
+		
+		
+		/*
+		if(lvClientApps.getCount() > 0)
+		{			
+			Log.v("MainMenu", "At least one Client app found.");
+			Log.v("MainMenu", "initializing lvClientApps onClick");
 
 			//set up listener for 
 			lvClientApps.setOnClickListener(new View.OnClickListener() {
@@ -49,22 +148,7 @@ public class MainMenu extends Activity {
 				@Override
 				public void onClick(View v) {
 					
-					Log.e("MainMenu", "lvClientApps onClick initialized");
-					
-					selectedAppId = (int) lvClientApps.getSelectedItemId();
-					selectedAppName = lvClientApps.getSelectedItem().toString();
 
-					Log.e("MainMenu", "selectedAppId = " + selectedAppId);
-					Log.e("MainMenu", "selectedAppName = " + selectedAppName);
-					
-					Intent nextScreen = new Intent(getApplicationContext(), SelectedApp.class);
-					
-					//send info about the selected app to the other activity
-					nextScreen.putExtra("selectedAppId", selectedAppId);
-					nextScreen.putExtra("selectedAppName", selectedAppName);
-
-					Log.e("MainMenu", "Starting SelectedApp...");
-					startActivity(nextScreen);
 				}
 			});
 		}
@@ -72,22 +156,45 @@ public class MainMenu extends Activity {
 		{
 			Log.e("No apps found", "");
 			
-		//  else report no debuggable apps found 
-		
-			//add a "no debuggable apps found" item to the array
-			
+			TextView msg = (TextView) findViewById(R.id.TVMainMenuTitle);
+			msg.setText("No active debuggable apps found");
+				
 			//Todo: add a refresh button to the top of the screen
 		}
 		
+		*/
+		
+
 	}
 
 	
-	
-	//I don't know if or how we'll use the options menu, but I'll leave this placeholder	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {	
-		//creates the main menu. I don't know if we'll use this just yet.
-		getMenuInflater().inflate(R.menu.main, menu);
+	protected void onStart()
+	{
+		super.onStart();
+		Log.v(LOG_TAG, "Requesting Packages...");
+		PackageListRequest.send(this,  this._packageHandler);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main_menu, menu);
 		return true;
 	}
+
+	@Override
+//	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+		Intent i = new Intent(this, CurrentSession.class);
+		
+		i.putExtra(PACKAGE_NAME, _packages.get(position));
+
+		this.startActivity(i);
+		
+	}
+
 }
+
+
+

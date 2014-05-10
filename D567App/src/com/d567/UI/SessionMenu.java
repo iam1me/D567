@@ -1,4 +1,4 @@
-package com.d567.UI;
+package com.d567.ui;
 
 public class SessionMenu {
 

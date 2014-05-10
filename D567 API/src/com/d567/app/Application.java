@@ -12,15 +12,9 @@ import com.d567.request.SessionStopRequest;
 import com.d567.request.SettingsRequest;
 import com.d567.tracesession.*;
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteException;
-import android.os.Bundle;
 import android.os.Process;
 import android.util.Log;
 
@@ -44,10 +38,7 @@ public class Application extends android.app.Application implements UncaughtExce
 	private static SessionStartReceiver _startHandler = null;
 	private static SessionStopReceiver _stopHandler = null;
 	private static SessionDeleteReceiver _deleteHandler = null;
-	
-	private static UncaughtExceptionHandler _defaultUEH = null;
-	
-	
+		
 	/**********************************
 	 *         Getters/Setters
 	 **********************************/
@@ -90,7 +81,6 @@ public class Application extends android.app.Application implements UncaughtExce
 		{
 			Log.d(LOG_TAG, "Initializing D567 API");
 			init(getApplicationContext());
-			_defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
 			Thread.setDefaultUncaughtExceptionHandler(this);
 		}
 		catch(Exception ex)

@@ -8,19 +8,19 @@ import java.text.*;
 
 import com.d567.app.ApplicationSettings;
 
-/**
+/** CHANGE LOG
  * 4/28/2014 - Updated to DB Version 2. Removed the session_trace_level
  * 				from the session_mstr table. 
  * 
- * @author Ryan Williams
- *
+ * 5/10/2014 - Updated to DB Version 3. Added the saved_state_mstr table.
+ * 
  */
 
 
 public class DBHelper extends android.database.sqlite.SQLiteOpenHelper
 {
 	private final static String LOG_TAG = "D567_DB_HELPER";	
-	public static final int DB_VER = 2;
+	public static final int DB_VER = 3;
 
 	/**
 	 * Opens the Database specified in the ApplicationSettings
@@ -42,6 +42,9 @@ public class DBHelper extends android.database.sqlite.SQLiteOpenHelper
 			
 			Log.d(LOG_TAG, "Create Trace Table");
 			TraceTable.createTable(db);
+			
+			Log.d(LOG_TAG, "Create Saved State Table");
+			SavedStateTable.createTable(db);
 			
 			db.setTransactionSuccessful();
 		}
@@ -69,6 +72,9 @@ public class DBHelper extends android.database.sqlite.SQLiteOpenHelper
 			
 			Log.d(LOG_TAG, "Update Trace Table");
 			TraceTable.updateTable(db, oldVersion, newVersion);
+			
+			Log.d(LOG_TAG, "Update Saved State Table");
+			SavedStateTable.updateTable(db, oldVersion, newVersion);
 			
 			db.setTransactionSuccessful();
 		}

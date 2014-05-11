@@ -38,6 +38,8 @@ public class Application extends android.app.Application implements UncaughtExce
 	private static SessionStartReceiver _startHandler = null;
 	private static SessionStopReceiver _stopHandler = null;
 	private static SessionDeleteReceiver _deleteHandler = null;
+	
+	private static SaveStateRequestHandler _saveStateHandler = null;
 		
 	/**********************************
 	 *         Getters/Setters
@@ -69,6 +71,16 @@ public class Application extends android.app.Application implements UncaughtExce
 	 */
 	public static String getSessionId()
 	{ return _sessionId; }
+	
+	
+	public static SaveStateRequestHandler getSaveStateRequestHandler()
+	{
+		return _saveStateHandler;
+	}
+	
+	public static void setSaveStateRequestHandler(SaveStateRequestHandler handler)
+	{ _saveStateHandler = handler; }
+	
 	
 	/**********************************
 	 *  Application Lifecycle Events

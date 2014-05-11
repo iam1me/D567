@@ -91,41 +91,6 @@ public class SessionAdapter
 		return s;
 	}
 	
-	/**
-	 * Resumes an existing session
-	 * It will also set the end time to null.
-	 * 
-	 * @param session_id The id of the session to start/resume
-	 * @throws Exception
-	 * @throws IllegalStateException
-	 * @throws SQLiteException
-	 *
-	public void ResumeSession(String session_id) throws IllegalStateException, SQLiteException
-	{
-		if(_db == null)
-			throw new IllegalStateException("database not open");
-			
-		if(session_id == null)
-			throw new IllegalArgumentException("session_id is NULL");
-		
-		Time t = new Time(Time.getCurrentTimezone());
-		t.setToNow();
-		
-		ContentValues values = new ContentValues();
-		values.put(SessionTable.KEY_START, t.toMillis(false));
-		
-		String selection = MessageFormat.format("{0} = ? and {1} is null",
-				SessionTable.KEY_ID, SessionTable.KEY_START);
-		
-		int count = _db.update(SessionTable.TABLE_NAME, values, selection, 
-				new String[] {session_id});
-		
-		if(count == 0)
-		{
-			throw new SQLiteException(MessageFormat.format("Failed Start Session {0}", session_id));
-		}		
-	}*/
-
 	public void EndSession(String session_id) throws IllegalStateException, SQLiteException
 	{
 		if(_db == null)

@@ -1,13 +1,13 @@
 package com.d567.receiver;
 
 import com.d567.app.Application;
-import com.d567.app.SaveStateRequestHandler;
 import com.d567.request.SaveStateRequest;
+import com.d567.state.SaveStateHandler;
 
 import android.content.*;
 import android.os.Bundle;
 
-public class SavedStateRequestReceiver extends BroadcastReceiver 
+public class SaveStateReceiver extends BroadcastReceiver 
 {
 	@Override
 	public void onReceive(Context context, Intent intent) 
@@ -17,14 +17,14 @@ public class SavedStateRequestReceiver extends BroadcastReceiver
 		
 		SaveStateRequest.Results results = new SaveStateRequest.Results();
 		
-		SaveStateRequestHandler handler = Application.getSaveStateRequestHandler();
+		SaveStateHandler handler = Application.getSaveStateRequestHandler();
 		
 		if(handler != null)
 		{
 			try
 			{
-				SaveStateRequestHandler.RequestArgs args = new SaveStateRequestHandler.RequestArgs(params.getDescription());
-				String id = handler.onSaveStateRequest(args);
+				SaveStateHandler.RequestArgs args = new SaveStateHandler.RequestArgs(params.getDescription());
+				String id = handler.onSaveState(args);
 				
 				if(id != null)
 				{

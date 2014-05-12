@@ -1,7 +1,5 @@
 package com.d567.request;
 
-import com.d567.app.IBundle;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +7,7 @@ import android.os.Bundle;
 
 public class SaveStateRequest
 {
-	public final static String SAVE_STATE_REQUEST = "com.d567.request.savestate";
+	public final static String SAVE_STATE_REQUEST = "com.d567.request.savestaterequest";
 	
 	public final static String PARAM_DESC = SAVE_STATE_REQUEST + ".params.desc";
 	

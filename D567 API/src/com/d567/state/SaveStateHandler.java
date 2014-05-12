@@ -1,6 +1,6 @@
-package com.d567.app;
+package com.d567.state;
 
-public abstract class SaveStateRequestHandler
+public abstract class SaveStateHandler
 {		
 	/**
 	 * Called when the Application receives a CREATE_SAVE_STATE Intent.
@@ -16,7 +16,7 @@ public abstract class SaveStateRequestHandler
 	 * 								it is thrown so that it maybe sent back to 
 	 * 								the requester.
 	 */
-	public abstract String onSaveStateRequest(RequestArgs args) throws Exception;
+	public abstract String onSaveState(RequestArgs args) throws Exception;
 	
 	/**
 	 * A helper class for encapsulating any parameters for the Save State Request

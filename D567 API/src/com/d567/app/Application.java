@@ -10,6 +10,7 @@ import com.d567.request.SessionDeleteRequest;
 import com.d567.request.SessionStartRequest;
 import com.d567.request.SessionStopRequest;
 import com.d567.request.SettingsRequest;
+import com.d567.state.SaveStateHandler;
 import com.d567.tracesession.*;
 
 import android.content.Context;
@@ -39,7 +40,7 @@ public class Application extends android.app.Application implements UncaughtExce
 	private static SessionStopReceiver _stopHandler = null;
 	private static SessionDeleteReceiver _deleteHandler = null;
 	
-	private static SaveStateRequestHandler _saveStateHandler = null;
+	private static SaveStateHandler _saveStateHandler = null;
 		
 	/**********************************
 	 *         Getters/Setters
@@ -73,12 +74,12 @@ public class Application extends android.app.Application implements UncaughtExce
 	{ return _sessionId; }
 	
 	
-	public static SaveStateRequestHandler getSaveStateRequestHandler()
+	public static SaveStateHandler getSaveStateRequestHandler()
 	{
 		return _saveStateHandler;
 	}
 	
-	public static void setSaveStateRequestHandler(SaveStateRequestHandler handler)
+	public static void setSaveStateRequestHandler(SaveStateHandler handler)
 	{ _saveStateHandler = handler; }
 	
 	
